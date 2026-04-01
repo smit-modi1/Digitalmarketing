@@ -1,0 +1,12 @@
+{
+  "name": "point-marketing-uk-affiliate-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fully functional UK Amazon affiliate product site with login and product management",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

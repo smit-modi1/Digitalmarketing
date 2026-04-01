@@ -1,0 +1,38 @@
+[
+  {
+    "id": "b0cfd462-5cae-4aa8-a5ac-e1f30153ef01",
+    "name": "DEWALT 18V XR Brushless Combi Drill Kit",
+    "soldBy": "Amazon UK",
+    "brand": "DEWALT",
+    "category": "Tools & DIY",
+    "price": 189.99,
+    "affiliateUrl": "https://www.amazon.co.uk/",
+    "description": "Trade-ready combi drill kit with two batteries, charger, carry case, and all-round power for home and site use.",
+    "image": "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=900&q=80",
+    "updatedAt": "2026-04-01T22:31:00.000Z"
+  },
+  {
+    "id": "ee13c043-3eb4-425d-999f-aec77d505777",
+    "name": "Ninja Foodi Dual Zone Air Fryer",
+    "soldBy": "Amazon UK",
+    "brand": "Ninja",
+    "category": "Kitchen",
+    "price": 199,
+    "affiliateUrl": "https://www.amazon.co.uk/",
+    "description": "Popular double-drawer air fryer for busy households that want crisp results and flexible cooking zones.",
+    "image": "https://images.unsplash.com/photo-1585515656626-4e83d8710d6d?auto=format&fit=crop&w=900&q=80",
+    "updatedAt": "2026-04-01T22:31:00.000Z"
+  },
+  {
+    "id": "42d67835-f112-4f12-b0f6-f757f8d58f20",
+    "name": "Apple AirPods Pro (2nd generation)",
+    "soldBy": "Amazon UK",
+    "brand": "Apple",
+    "category": "Electronics",
+    "price": 229,
+    "affiliateUrl": "https://www.amazon.co.uk/",
+    "description": "Premium wireless earbuds with adaptive audio, noise cancellation, and a comfortable in-ear fit.",
+    "image": "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f37?auto=format&fit=crop&w=900&q=80",
+    "updatedAt": "2026-04-01T22:31:00.000Z"
+  }
+]

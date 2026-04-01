@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Point Marketing UK | Amazon Product Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="announcement-bar">I'm an independent Amazon affiliate. I earn commissions on qualifying purchases at no extra cost to you.</div>
+
+  <header class="site-header">
+    <div class="brand-block">
+      <a class="brand" href="#top">Point Marketing</a>
+    </div>
+    <nav class="main-nav" aria-label="Primary">
+      <a href="#top">Home</a>
+      <a href="#catalogue">Articles</a>
+      <a href="#workspace">About Us</a>
+      <a href="#workspace">Privacy &amp; Policy</a>
+      <a href="#workspace">Contact Us</a>
+      <a href="#catalogue">Categories</a>
+    </nav>
+    <div class="header-actions">
+      <button class="sign-button" type="button" id="login-trigger">Sign In</button>
+      <button class="ghost-button hidden" type="button" id="logout-button">Logout</button>
+    </div>
+  </header>
+
+  <main class="page-shell" id="top">
+    <section class="hero-banner">
+      <div class="hero-card">
+        <p class="hero-kicker">UK Amazon picks curated for shoppers</p>
+        <h1>Product Overview</h1>
+        <p id="hero-summary">Select a product below to view details, compare brand information, and jump to Amazon.</p>
+      </div>
+    </section>
+
+    <section class="overview-section">
+      <div class="overview-grid">
+        <article class="panel-frame">
+          <div class="panel-card product-visual">
+            <h2>Picture</h2>
+            <div class="product-image-stage">
+              <img id="feature-image" src="" alt="Selected product image">
+            </div>
+          </div>
+        </article>
+
+        <article class="panel-frame">
+          <div class="panel-card product-detail">
+            <h2>Details</h2>
+            <div class="detail-stack">
+              <p><strong>Product Name:</strong> <span id="feature-name"></span></p>
+              <p><strong>Product Type:</strong> <span id="feature-category"></span></p>
+              <p><strong>Brandname:</strong> <span id="feature-brand"></span></p>
+              <p><strong>Sold by:</strong> <span id="feature-seller"></span></p>
+              <p><strong>Price:</strong> <span id="feature-price"></span></p>
+              <p><strong>Overview:</strong> <span id="feature-description"></span></p>
+            </div>
+            <div class="detail-actions">
+              <a class="primary-cta" id="feature-link" href="#" target="_blank" rel="noopener noreferrer">Buy on Amazon</a>
+              <button class="secondary-cta" type="button" id="scroll-to-catalogue">Browse more items</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="catalogue-section" id="catalogue">
+      <div class="catalogue-head">
+        <div>
+          <p class="section-label">Featured Items</p>
+          <h2>Shop by product card</h2>
+        </div>
+        <div class="catalogue-tools">
+          <input id="search-input" type="search" placeholder="Search product, seller, brand, or category">
+          <div class="stats-inline">
+            <span>Products: <strong id="product-count">0</strong></span>
+            <span>Session: <strong id="session-summary">Guest</strong></span>
+          </div>
+        </div>
+      </div>
+      <div class="product-grid" id="product-grid"></div>
+      <div class="empty-state hidden" id="empty-state">
+        <h3>No products found</h3>
+        <p>Try another search or add a new item from the management section.</p>
+      </div>
+    </section>
+
+    <section class="workspace-section" id="workspace">
+      <div class="workspace-head">
+        <div>
+          <p class="section-label">Admin Workspace</p>
+          <h2>Manage product content</h2>
+          <p class="workspace-copy">Both roles can sign in and manage items. All changes save to the live backend and stay available after a restart.</p>
+        </div>
+        <div class="session-badge">
+          <span id="auth-status">Not signed in</span>
+          <strong id="active-user-name">Guest Visitor</strong>
+          <small id="active-user-role">signed_out</small>
+        </div>
+      </div>
+
+      <div class="credentials-grid" id="credentials">
+        <article>
+          <span>Master Admin</span>
+          <strong>Username: masteradmin</strong>
+          <small>Password: admin123</small>
+        </article>
+        <article>
+          <span>Second User</span>
+          <strong>Username: seconduser</strong>
+          <small>Password: user123</small>
+        </article>
+      </div>
+
+      <div class="workspace-grid">
+        <section class="manager-panel">
+          <div class="workspace-lock" id="workspace-lock">
+            <strong>Login required</strong>
+            <p id="auth-hint">Sign in with either account to add, edit, and remove Amazon products.</p>
+          </div>
+
+          <div class="panel-top">
+            <div>
+              <p class="section-label">Editor</p>
+              <h3 id="form-title">Add Product</h3>
+            </div>
+            <div class="editor-actions">
+              <button class="secondary-cta compact hidden" type="button" id="cancel-edit">Cancel Edit</button>
+              <button class="primary-cta compact" type="button" id="add-product-button">New Item</button>
+            </div>
+          </div>
+
+          <form id="product-form" class="product-form">
+            <label>
+              <span>Product image</span>
+              <input id="image-upload" type="file" accept="image/*">
+              <small>Upload an image or provide an image URL below.</small>
+            </label>
+
+            <label>
+              <span>Image URL</span>
+              <input id="image-url" name="imageUrl" type="url" placeholder="https://example.com/product.jpg">
+            </label>
+
+            <label>
+              <span>Product name</span>
+              <input id="product-name" name="name" type="text" required placeholder="Product title">
+            </label>
+
+            <div class="form-split">
+              <label>
+                <span>Sold by</span>
+                <input id="sold-by" name="soldBy" type="text" required placeholder="Amazon UK">
+              </label>
+              <label>
+                <span>Brand name</span>
+                <input id="brand" name="brand" type="text" required placeholder="Brand">
+              </label>
+            </div>
+
+            <div class="form-split">
+              <label>
+                <span>Category</span>
+                <input id="category" name="category" type="text" required placeholder="Tools &amp; DIY">
+              </label>
+              <label>
+                <span>Price (GBP)</span>
+                <input id="price" name="price" type="number" min="0" step="0.01" required placeholder="149.99">
+              </label>
+            </div>
+
+            <label>
+              <span>Amazon affiliate URL</span>
+              <input id="affiliate-url" name="affiliateUrl" type="url" required placeholder="https://www.amazon.co.uk/...">
+            </label>
+
+            <label>
+              <span>Product overview</span>
+              <textarea id="description" name="description" rows="4" placeholder="Short product summary for shoppers"></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button class="primary-cta compact" type="submit" id="save-product-button">Save Product</button>
+              <button class="secondary-cta compact" type="button" id="reset-form-button">Reset</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="manager-panel">
+          <div class="panel-top">
+            <div>
+              <p class="section-label">Inventory</p>
+              <h3>Current product list</h3>
+            </div>
+          </div>
+          <div class="inventory-list" id="inventory-list"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop hidden" id="login-modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="login-title">
+      <button class="modal-close" type="button" id="close-login-modal" aria-label="Close login">&times;</button>
+      <p class="section-label">Sign in</p>
+      <h2 id="login-title">Access the workspace</h2>
+      <p>Use one of the two user accounts shown in the workspace section.</p>
+      <form id="login-form" class="product-form">
+        <label>
+          <span>Username</span>
+          <input name="username" type="text" required placeholder="masteradmin">
+        </label>
+        <label>
+          <span>Password</span>
+          <input name="password" type="password" required placeholder="admin123">
+        </label>
+        <div class="form-actions">
+          <button class="primary-cta compact" type="submit">Sign In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
