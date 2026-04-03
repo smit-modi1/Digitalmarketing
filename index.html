@@ -116,6 +116,24 @@
       <div class="category-bar" id="categories">
         <div class="category-chips" id="category-chips"></div>
       </div>
+      <div class="category-directory">
+        <article class="category-info-card">
+          <h3>Home & Lifestyle</h3>
+          <p>Practical household upgrades, cleaning tools, and everyday-use products aimed at high-intent UK shoppers.</p>
+        </article>
+        <article class="category-info-card">
+          <h3>Kitchen & Cooking</h3>
+          <p>Popular cooking appliances and convenience-led kitchen picks that work well for offer-led campaigns and gift traffic.</p>
+        </article>
+        <article class="category-info-card">
+          <h3>Tech & Smart Home</h3>
+          <p>Connected products, smart security, audio, and lighting items that benefit from both review content and creator-driven discovery.</p>
+        </article>
+        <article class="category-info-card">
+          <h3>Tools & DIY</h3>
+          <p>Higher-value products with clear use cases, strong conversion potential, and solid positioning for deal-driven buyers.</p>
+        </article>
+      </div>
       <div class="product-grid" id="product-grid"></div>
       <div class="empty-state hidden" id="empty-state">
         <h3>No products found</h3>
@@ -158,14 +176,16 @@
       <div class="copy-card">
         <p class="section-label">About Us</p>
         <h2>How Point Marketing works as a growth platform</h2>
-        <p>Point Marketing is positioned as a hybrid affiliate and digital marketing platform for Amazon and TikTok-led products. The public site helps buyers discover products quickly, while the business-facing message is built for brands that want more traction.</p>
-        <p>Our angle is simple: cleaner product discovery for shoppers, and sharper campaign framing for sellers who want discounted pushes, tester exposure, and creator-friendly distribution stories.</p>
+        <p>Point Marketing is a UK-focused affiliate and digital commerce platform built around two outcomes: helping shoppers discover worthwhile products faster, and helping brands generate traction through cleaner offer positioning.</p>
+        <p>For buyers, the goal is simple navigation, strong product summaries, and direct routes to purchase. For business clients, the model is built around discounted tester pushes, influencer seeding, offer-led landing pages, and better visibility for Amazon and TikTok-friendly products.</p>
+        <p>We think like operators, not just publishers: every featured item should be easy to understand, easy to click, and aligned with a category that people are already ready to buy in.</p>
       </div>
       <div class="copy-card" id="privacy">
         <p class="section-label">Privacy &amp; Policy</p>
         <h2>Clear policies for affiliate transparency</h2>
         <p>This site uses affiliate links to Amazon.co.uk. Clicking a product may earn a referral commission if you complete a qualifying purchase. That does not change the price you pay.</p>
-        <p>Contact form submissions are stored only to help respond to enquiries from buyers or business clients. No checkout or payment data is collected by this site.</p>
+        <p>Contact form submissions are stored only to help respond to enquiries from buyers or business clients. No checkout or payment data is collected by this site, and purchases are completed on third-party marketplaces.</p>
+        <p>Administrative product controls are restricted to the site operator. Public visitors cannot add, edit, or delete product listings through the storefront.</p>
       </div>
     </section>
 
@@ -180,6 +200,11 @@
             <li>Broken link reports</li>
             <li>Brand, discount, and partnership requests</li>
           </ul>
+          <div class="contact-meta">
+            <p><strong>Coverage:</strong> UK-focused buyer traffic and brand outreach</p>
+            <p><strong>Typical replies:</strong> within 1 to 2 working days</p>
+            <p><strong>Best for:</strong> Amazon listings, TikTok product campaigns, tester offers, and creator seeding</p>
+          </div>
         </div>
         <form id="contact-form" class="contact-form copy-card">
           <label>
@@ -205,7 +230,7 @@
       </div>
     </section>
 
-    <section class="workspace-section" id="workspace">
+    <section class="workspace-section hidden" id="workspace">
       <div class="workspace-head">
         <div>
           <p class="section-label">Admin Workspace</p>
@@ -217,14 +242,6 @@
           <strong id="active-user-name">Guest Visitor</strong>
           <small id="active-user-role">signed_out</small>
         </div>
-      </div>
-
-      <div class="credentials-grid credentials-single" id="credentials">
-        <article>
-          <span>Master Admin</span>
-          <strong>Username: masteradmin</strong>
-          <small>Password: admin123</small>
-        </article>
       </div>
 
       <div class="workspace-grid">
@@ -329,7 +346,7 @@
       <button class="modal-close" type="button" id="close-login-modal" aria-label="Close login">&times;</button>
       <p class="section-label">Sign in</p>
       <h2 id="login-title">Access the workspace</h2>
-      <p>Use one of the two user accounts shown in the workspace section.</p>
+      <p>Private operator login for managing products and reviewing inbound enquiries.</p>
       <form id="login-form" class="product-form">
         <label>
           <span>Username</span>

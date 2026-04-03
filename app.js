@@ -68,6 +68,7 @@ function wireEvents() {
 
 async function bootstrap() {
   renderSession();
+  toggleWorkspace(Boolean(state.user));
   setWorkspaceLocked(!state.user);
   await validateSession();
   await loadProducts();
@@ -92,6 +93,7 @@ async function validateSession() {
   }
 
   renderSession();
+  toggleWorkspace(Boolean(state.user));
   setWorkspaceLocked(!state.user);
 }
 
@@ -385,12 +387,14 @@ async function handleLogin(event) {
     state.user = data.user;
     storeSession();
     renderSession();
+    toggleWorkspace(true);
     setWorkspaceLocked(false);
     renderProducts();
     renderInventory();
     await loadMessages();
     closeLoginModal();
     event.currentTarget.reset();
+    document.getElementById("workspace").scrollIntoView({ behavior: "smooth", block: "start" });
     showToast(`Signed in as ${state.user.name}.`);
   } catch (error) {
     showToast(error.message || "Login failed. Use the master admin account.");
@@ -414,6 +418,7 @@ async function handleLogout() {
   clearStoredSession();
   resetForm();
   renderSession();
+  toggleWorkspace(false);
   setWorkspaceLocked(true);
   renderProducts();
   renderInventory();
@@ -602,6 +607,11 @@ function setWorkspaceLocked(locked) {
   form.querySelectorAll("input, textarea, button").forEach((element) => {
     element.disabled = locked;
   });
+}
+
+function toggleWorkspace(isVisible) {
+  const workspace = document.getElementById("workspace");
+  workspace.classList.toggle("hidden", !isVisible);
 }
 
 function openLoginModal() {

@@ -391,6 +391,33 @@ button {
   margin-top: 18px;
 }
 
+.category-directory {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.category-info-card {
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.category-info-card h3 {
+  margin: 0 0 8px;
+  font-family: "Outfit", sans-serif;
+}
+
+.category-info-card p,
+.contact-meta p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
 .category-chips {
   display: flex;
   gap: 10px;
@@ -660,6 +687,12 @@ textarea:focus {
   border: 1px solid var(--line);
 }
 
+.contact-meta {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
 .inventory-list,
 .message-list {
   display: grid;
@@ -818,7 +851,8 @@ textarea:focus {
   .split-section,
   .insight-strip,
   .audience-section,
-  .service-grid {
+  .service-grid,
+  .category-directory {
     grid-template-columns: 1fr;
   }
 }
