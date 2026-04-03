@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node server.js"
   },
+  "dependencies": {
+    "@vercel/blob": "^2.3.0"
+  },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

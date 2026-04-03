@@ -100,7 +100,8 @@ async function validateSession() {
 async function loadProducts() {
   try {
     const response = await fetch("/api/products");
-    const data = await response.json();
+    const data = await readResponseData(response);
+    if (!response.ok) throw new Error(data.error || "Could not load products.");
     state.products = data.products || [];
     if (!state.selectedProductId && state.products.length) state.selectedProductId = state.products[0].id;
     renderCategories();
@@ -368,7 +369,8 @@ function getFilteredProducts() {
 
 async function handleLogin(event) {
   event.preventDefault();
-  const formData = new FormData(event.currentTarget);
+  const form = event.currentTarget;
+  const formData = new FormData(form);
 
   try {
     const response = await fetch("/api/login", {
@@ -380,7 +382,7 @@ async function handleLogin(event) {
       }),
     });
 
-    const data = await response.json();
+    const data = await readResponseData(response);
     if (!response.ok) throw new Error(data.error || "Login failed.");
 
     state.token = data.token;
@@ -393,7 +395,7 @@ async function handleLogin(event) {
     renderInventory();
     await loadMessages();
     closeLoginModal();
-    event.currentTarget.reset();
+    form.reset();
     document.getElementById("workspace").scrollIntoView({ behavior: "smooth", block: "start" });
     showToast(`Signed in as ${state.user.name}.`);
   } catch (error) {
@@ -444,11 +446,12 @@ async function handleSubmit(event) {
     affiliateUrl: normaliseAmazonUrl(formData.get("affiliateUrl").toString().trim()),
     description: formData.get("description").toString().trim(),
     image: state.uploadedImage || formData.get("imageUrl").toString().trim() || "",
+    clientProducts: state.products,
   };
 
   try {
     const method = state.editingId ? "PUT" : "POST";
-    const endpoint = state.editingId ? `/api/products/${state.editingId}` : "/api/products";
+    const endpoint = state.editingId ? `/api/products?id=${encodeURIComponent(state.editingId)}` : "/api/products";
     const response = await apiFetch(endpoint, {
       method,
       headers: { "Content-Type": "application/json" },
@@ -484,7 +487,7 @@ async function handleContactSubmit(event) {
   const formData = new FormData(form);
 
   try {
-    await fetch("/api/contact", {
+    const result = await fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -494,13 +497,16 @@ async function handleContactSubmit(event) {
         message: formData.get("message"),
       }),
     }).then(async (response) => {
-      const data = await response.json().catch(() => ({}));
+      const data = await readResponseData(response);
       if (!response.ok) throw new Error(data.error || "Could not send message.");
       return data;
     });
 
     form.reset();
-    if (state.user) await loadMessages();
+    if (state.user && result.message) {
+      state.messages = [result.message, ...state.messages.filter((item) => item.id !== result.message.id)];
+      renderMessages();
+    }
     showToast("Message sent successfully.");
   } catch (error) {
     showToast(error.message || "Could not send message.");
@@ -554,7 +560,11 @@ async function deleteProduct(productId) {
   if (!product) return;
 
   try {
-    await apiFetch(`/api/products/${productId}`, { method: "DELETE" });
+    await apiFetch(`/api/products?id=${encodeURIComponent(productId)}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ clientProducts: state.products }),
+    });
     state.products = state.products.filter((item) => item.id !== productId);
     if (state.selectedProductId === productId) state.selectedProductId = state.products[0]?.id || "";
     if (state.editingId === productId) resetForm();
@@ -631,10 +641,32 @@ async function apiFetch(url, options = {}) {
   if (state.token) headers.set("Authorization", `Bearer ${state.token}`);
 
   const response = await fetch(url, { ...options, headers });
-  const data = await response.json().catch(() => ({}));
+  const data = await readResponseData(response);
 
   if (!response.ok) throw new Error(data.error || "Request failed.");
   return data;
+}
+
+async function readResponseData(response) {
+  const contentType = response.headers.get("content-type") || "";
+
+  if (contentType.includes("application/json")) {
+    return response.json().catch(() => ({}));
+  }
+
+  const text = await response.text().catch(() => "");
+  return {
+    error: normaliseServerError(text),
+  };
+}
+
+function normaliseServerError(text) {
+  const cleaned = String(text || "").replace(/\s+/g, " ").trim();
+  if (!cleaned) return "The server returned an empty response.";
+  if (cleaned.startsWith("<!DOCTYPE") || cleaned.startsWith("<html")) {
+    return "The server returned an unexpected response.";
+  }
+  return cleaned.slice(0, 180);
 }
 
 function storeSession() {
