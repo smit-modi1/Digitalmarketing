@@ -11,7 +11,6 @@ const port = process.env.PORT || 3000;
 
 const users = [
   { id: "master-admin", username: "masteradmin", password: "admin123", name: "Master Admin", role: "master_admin" },
-  { id: "second-user", username: "seconduser", password: "user123", name: "Second User", role: "second_user" },
 ];
 
 const sessions = new Map();
@@ -141,8 +140,8 @@ async function handleApi(req, res, url) {
     }
 
     if (req.method === "GET" && url.pathname === "/api/session") {
-      const user = requireAuth(req);
-      if (!user) return json(res, 401, { error: "Unauthorized" });
+      const user = requireAdmin(req);
+      if (!user) return json(res, 403, { error: "Admin access required." });
       return json(res, 200, { user });
     }
 
@@ -169,14 +168,14 @@ async function handleApi(req, res, url) {
     }
 
     if (req.method === "GET" && url.pathname === "/api/contact") {
-      const user = requireAuth(req);
-      if (!user) return json(res, 401, { error: "Unauthorized" });
+      const user = requireAdmin(req);
+      if (!user) return json(res, 403, { error: "Admin access required." });
       return json(res, 200, { messages: readMessages() });
     }
 
     if (req.method === "POST" && url.pathname === "/api/products") {
-      const user = requireAuth(req);
-      if (!user) return json(res, 401, { error: "Unauthorized" });
+      const user = requireAdmin(req);
+      if (!user) return json(res, 403, { error: "Admin access required." });
 
       const body = await readJsonBody(req);
       const product = validateProduct(body);
@@ -288,6 +287,11 @@ function writeMessages(messages) {
 function requireAuth(req) {
   const token = getBearerToken(req);
   return token ? sessions.get(token) : null;
+}
+
+function requireAdmin(req) {
+  const user = requireAuth(req);
+  return user && user.role === "master_admin" ? user : null;
 }
 
 function getBearerToken(req) {

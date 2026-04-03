@@ -192,6 +192,32 @@ button {
   margin-top: 26px;
 }
 
+.audience-section,
+.service-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.audience-section {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 10px;
+}
+
+.audience-card,
+.service-card {
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+
+.audience-card h2,
+.service-card h3 {
+  margin: 0 0 10px;
+  font-family: "Outfit", sans-serif;
+}
+
 .overview-grid {
   display: grid;
   grid-template-columns: 0.9fr 1.2fr;
@@ -388,7 +414,8 @@ button {
 .credentials-grid,
 .workspace-grid,
 .contact-grid,
-.split-section {
+.split-section,
+.service-grid {
   display: grid;
   gap: 18px;
 }
@@ -399,6 +426,10 @@ button {
 }
 
 .article-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.service-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
@@ -535,6 +566,11 @@ button {
 .credentials-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 22px 0;
+}
+
+.credentials-single {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 420px;
 }
 
 .credentials-grid article {
@@ -780,7 +816,9 @@ textarea:focus {
   .workspace-grid,
   .contact-grid,
   .split-section,
-  .insight-strip {
+  .insight-strip,
+  .audience-section,
+  .service-grid {
     grid-template-columns: 1fr;
   }
 }

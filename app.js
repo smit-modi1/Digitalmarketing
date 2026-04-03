@@ -8,16 +8,16 @@ const fallbackImage =
 
 const articles = [
   {
-    title: "Best Amazon UK gadgets for everyday convenience",
-    summary: "A quick guide to smart home and tech products that save time without overcomplicating your setup.",
+    title: "Best Amazon UK products that feel worth the click",
+    summary: "A buyer-first shortlist of useful products with simple explanations, clear positioning, and less marketplace noise.",
   },
   {
-    title: "How to choose kitchen appliances that earn repeat use",
-    summary: "Focus on versatile products that solve a real daily problem rather than impulse purchases that gather dust.",
+    title: "How to choose discounted products without buying junk",
+    summary: "Low prices can drive conversions, but quality, fit-for-purpose use, and clear product framing still matter most.",
   },
   {
-    title: "What makes a good affiliate product page convert",
-    summary: "Clarity, clean descriptions, practical categories, and fast routes to purchase all matter more than flashy copy.",
+    title: "What brands need before a tester or influencer push",
+    summary: "A product needs a convincing offer, clear targeting, and a landing page that helps buyers and creators understand the value fast.",
   },
 ];
 
@@ -147,7 +147,7 @@ function renderSession() {
     activeUserRole.textContent = "signed_out";
     sessionSummary.textContent = "Guest";
     authStatus.textContent = "Not signed in";
-    authHint.textContent = "Sign in with either account to add, edit, and remove Amazon products.";
+    authHint.textContent = "Private admin login only. Sign in as masteradmin to manage the storefront.";
     logoutButton.classList.add("hidden");
   }
 }
@@ -393,7 +393,7 @@ async function handleLogin(event) {
     event.currentTarget.reset();
     showToast(`Signed in as ${state.user.name}.`);
   } catch (error) {
-    showToast(error.message || "Login failed.");
+    showToast(error.message || "Login failed. Use the master admin account.");
   }
 }
 
