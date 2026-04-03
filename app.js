@@ -6,23 +6,42 @@ const storageKeys = {
 const fallbackImage =
   "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=80";
 
+const articles = [
+  {
+    title: "Best Amazon UK gadgets for everyday convenience",
+    summary: "A quick guide to smart home and tech products that save time without overcomplicating your setup.",
+  },
+  {
+    title: "How to choose kitchen appliances that earn repeat use",
+    summary: "Focus on versatile products that solve a real daily problem rather than impulse purchases that gather dust.",
+  },
+  {
+    title: "What makes a good affiliate product page convert",
+    summary: "Clarity, clean descriptions, practical categories, and fast routes to purchase all matter more than flashy copy.",
+  },
+];
+
 let state = {
   token: localStorage.getItem(storageKeys.token) || "",
   user: readStoredUser(),
   products: [],
+  messages: [],
   editingId: null,
   selectedProductId: "",
   searchTerm: "",
+  activeCategory: "All",
   uploadedImage: "",
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
   wireEvents();
+  renderArticles();
   await bootstrap();
 });
 
 function wireEvents() {
   document.getElementById("product-form").addEventListener("submit", handleSubmit);
+  document.getElementById("contact-form").addEventListener("submit", handleContactSubmit);
   document.getElementById("reset-form-button").addEventListener("click", resetForm);
   document.getElementById("cancel-edit").addEventListener("click", cancelEdit);
   document.getElementById("add-product-button").addEventListener("click", focusFormForNewItem);
@@ -48,6 +67,7 @@ async function bootstrap() {
   setWorkspaceLocked(!state.user);
   await validateSession();
   await loadProducts();
+  await loadMessages();
 }
 
 async function validateSession() {
@@ -77,11 +97,29 @@ async function loadProducts() {
     const data = await response.json();
     state.products = data.products || [];
     if (!state.selectedProductId && state.products.length) state.selectedProductId = state.products[0].id;
+    renderCategories();
     renderFeatureProduct();
     renderProducts();
     renderInventory();
   } catch {
     showToast("Could not load products.");
+  }
+}
+
+async function loadMessages() {
+  if (!state.user) {
+    state.messages = [];
+    renderMessages();
+    return;
+  }
+
+  try {
+    const response = await apiFetch("/api/contact");
+    state.messages = response.messages || [];
+    renderMessages();
+  } catch {
+    state.messages = [];
+    renderMessages();
   }
 }
 
@@ -98,7 +136,7 @@ function renderSession() {
     activeUserRole.textContent = state.user.role;
     sessionSummary.textContent = state.user.name;
     authStatus.textContent = `${state.user.name} signed in`;
-    authHint.textContent = "You can add, edit, and remove products.";
+    authHint.textContent = "You can add, edit, and remove products, and review contact enquiries.";
     logoutButton.classList.remove("hidden");
   } else {
     activeUserName.textContent = "Guest Visitor";
@@ -116,6 +154,14 @@ function renderFeatureProduct() {
 
   if (!product) {
     summary.textContent = "Add your first product to start building the catalogue.";
+    document.getElementById("feature-image").src = fallbackImage;
+    document.getElementById("feature-name").textContent = "No product selected";
+    document.getElementById("feature-category").textContent = "General";
+    document.getElementById("feature-brand").textContent = "-";
+    document.getElementById("feature-seller").textContent = "-";
+    document.getElementById("feature-price").textContent = "GBP 0.00";
+    document.getElementById("feature-description").textContent = "No product overview added yet.";
+    document.getElementById("feature-link").href = "https://www.amazon.co.uk/";
     return;
   }
 
@@ -130,6 +176,44 @@ function renderFeatureProduct() {
   document.getElementById("feature-price").textContent = `GBP ${formatPrice(product.price)}`;
   document.getElementById("feature-description").textContent = product.description || "No product overview added yet.";
   document.getElementById("feature-link").href = product.affiliateUrl;
+}
+
+function renderCategories() {
+  const wrap = document.getElementById("category-chips");
+  const categories = ["All", ...new Set(state.products.map((product) => product.category).filter(Boolean))];
+
+  wrap.innerHTML = categories
+    .map(
+      (category) => `
+        <button class="chip ${category === state.activeCategory ? "active" : ""}" type="button" data-category="${escapeAttribute(category)}">
+          ${escapeHtml(category)}
+        </button>
+      `,
+    )
+    .join("");
+
+  wrap.querySelectorAll("[data-category]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.activeCategory = button.dataset.category;
+      renderCategories();
+      renderProducts();
+    });
+  });
+}
+
+function renderArticles() {
+  const wrap = document.getElementById("article-grid");
+  wrap.innerHTML = articles
+    .map(
+      (article) => `
+        <article class="article-card">
+          <p class="section-label">Guide</p>
+          <h3>${escapeHtml(article.title)}</h3>
+          <p>${escapeHtml(article.summary)}</p>
+        </article>
+      `,
+    )
+    .join("");
 }
 
 function renderProducts() {
@@ -209,6 +293,45 @@ function renderInventory() {
   bindProductActions(container);
 }
 
+function renderMessages() {
+  const container = document.getElementById("message-list");
+
+  if (!state.user) {
+    container.innerHTML = `
+      <div class="inventory-empty">
+        <strong>Inbox locked</strong>
+        <p>Sign in to review contact form submissions.</p>
+      </div>
+    `;
+    return;
+  }
+
+  if (!state.messages.length) {
+    container.innerHTML = `
+      <div class="inventory-empty">
+        <strong>No messages yet</strong>
+        <p>Contact form submissions will appear here.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = state.messages
+    .map(
+      (message) => `
+        <article class="message-item">
+          <div class="message-meta">
+            <strong>${escapeHtml(message.subject)}</strong>
+            <span>${formatDate(message.createdAt)}</span>
+          </div>
+          <p><strong>${escapeHtml(message.name)}</strong> (${escapeHtml(message.email)})</p>
+          <p>${escapeHtml(message.message)}</p>
+        </article>
+      `,
+    )
+    .join("");
+}
+
 function bindProductActions(container) {
   container.querySelectorAll("[data-select-id]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -229,10 +352,11 @@ function bindProductActions(container) {
 }
 
 function getFilteredProducts() {
-  if (!state.searchTerm) return [...state.products];
   return state.products.filter((product) => {
+    const matchesCategory = state.activeCategory === "All" || product.category === state.activeCategory;
     const searchable = `${product.name} ${product.brand} ${product.soldBy} ${product.category || ""}`.toLowerCase();
-    return searchable.includes(state.searchTerm);
+    const matchesSearch = !state.searchTerm || searchable.includes(state.searchTerm);
+    return matchesCategory && matchesSearch;
   });
 }
 
@@ -260,6 +384,7 @@ async function handleLogin(event) {
     setWorkspaceLocked(false);
     renderProducts();
     renderInventory();
+    await loadMessages();
     closeLoginModal();
     event.currentTarget.reset();
     showToast(`Signed in as ${state.user.name}.`);
@@ -288,6 +413,7 @@ async function handleLogout() {
   setWorkspaceLocked(true);
   renderProducts();
   renderInventory();
+  await loadMessages();
   showToast("Signed out.");
 }
 
@@ -330,12 +456,42 @@ async function handleSubmit(event) {
       showToast("Product added.");
     }
 
+    renderCategories();
     renderFeatureProduct();
     renderProducts();
     renderInventory();
     resetForm();
   } catch (error) {
     showToast(error.message || "Could not save product.");
+  }
+}
+
+async function handleContactSubmit(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+
+  try {
+    await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.get("name"),
+        email: formData.get("email"),
+        subject: formData.get("subject"),
+        message: formData.get("message"),
+      }),
+    }).then(async (response) => {
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Could not send message.");
+      return data;
+    });
+
+    form.reset();
+    if (state.user) await loadMessages();
+    showToast("Message sent successfully.");
+  } catch (error) {
+    showToast(error.message || "Could not send message.");
   }
 }
 
@@ -371,7 +527,7 @@ function startEdit(productId) {
   document.getElementById("affiliate-url").value = product.affiliateUrl;
   document.getElementById("description").value = product.description || "";
   document.getElementById("image-url").value = product.image.startsWith("data:") ? "" : product.image;
-  document.getElementById("form-title").textContent = `Edit Product`;
+  document.getElementById("form-title").textContent = "Edit Product";
   document.getElementById("save-product-button").textContent = "Update Product";
   document.getElementById("cancel-edit").classList.remove("hidden");
   renderFeatureProduct();
@@ -390,6 +546,8 @@ async function deleteProduct(productId) {
     state.products = state.products.filter((item) => item.id !== productId);
     if (state.selectedProductId === productId) state.selectedProductId = state.products[0]?.id || "";
     if (state.editingId === productId) resetForm();
+    if (!state.products.some((item) => item.category === state.activeCategory)) state.activeCategory = "All";
+    renderCategories();
     renderFeatureProduct();
     renderProducts();
     renderInventory();
@@ -487,6 +645,16 @@ function normaliseAmazonUrl(url) {
 
 function formatPrice(price) {
   return Number(price).toFixed(2);
+}
+
+function formatDate(value) {
+  return new Date(value).toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function escapeHtml(value) {

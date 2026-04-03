@@ -18,11 +18,11 @@
     </div>
     <nav class="main-nav" aria-label="Primary">
       <a href="#top">Home</a>
-      <a href="#catalogue">Articles</a>
-      <a href="#workspace">About Us</a>
-      <a href="#workspace">Privacy &amp; Policy</a>
-      <a href="#workspace">Contact Us</a>
-      <a href="#catalogue">Categories</a>
+      <a href="#articles">Articles</a>
+      <a href="#about">About Us</a>
+      <a href="#privacy">Privacy &amp; Policy</a>
+      <a href="#contact">Contact Us</a>
+      <a href="#categories">Categories</a>
     </nav>
     <div class="header-actions">
       <button class="sign-button" type="button" id="login-trigger">Sign In</button>
@@ -70,6 +70,21 @@
       </div>
     </section>
 
+    <section class="insight-strip">
+      <article>
+        <strong>6</strong>
+        <span>Hand-picked starter products</span>
+      </article>
+      <article>
+        <strong>UK</strong>
+        <span>Amazon.co.uk focused storefront</span>
+      </article>
+      <article>
+        <strong>2</strong>
+        <span>Admin roles with live product editing</span>
+      </article>
+    </section>
+
     <section class="catalogue-section" id="catalogue">
       <div class="catalogue-head">
         <div>
@@ -84,10 +99,73 @@
           </div>
         </div>
       </div>
+      <div class="category-bar" id="categories">
+        <div class="category-chips" id="category-chips"></div>
+      </div>
       <div class="product-grid" id="product-grid"></div>
       <div class="empty-state hidden" id="empty-state">
         <h3>No products found</h3>
-        <p>Try another search or add a new item from the management section.</p>
+        <p>Try another search or category, or add a new item from the management section.</p>
+      </div>
+    </section>
+
+    <section class="info-section" id="articles">
+      <div class="section-intro">
+        <p class="section-label">Articles</p>
+        <h2>Fresh buying guides for UK shoppers</h2>
+        <p>These editorial blocks make the site feel complete and give visitors extra context before they click through to Amazon.</p>
+      </div>
+      <div class="article-grid" id="article-grid"></div>
+    </section>
+
+    <section class="info-section split-section" id="about">
+      <div class="copy-card">
+        <p class="section-label">About Us</p>
+        <h2>How Point Marketing picks products</h2>
+        <p>Point Marketing is a simple UK affiliate storefront built to highlight useful Amazon products across home, tools, kitchen, smart home, and tech categories.</p>
+        <p>We focus on practical product pages, clear comparisons, and clean routes to purchase. The aim is to help visitors discover items quickly without fighting cluttered layouts or vague descriptions.</p>
+      </div>
+      <div class="copy-card" id="privacy">
+        <p class="section-label">Privacy &amp; Policy</p>
+        <h2>Clear policies for affiliate transparency</h2>
+        <p>This site uses affiliate links to Amazon.co.uk. Clicking a product may earn a referral commission if you complete a qualifying purchase. That does not change the price you pay.</p>
+        <p>Contact form submissions are stored only to help respond to enquiries. No checkout or payment data is collected by this site.</p>
+      </div>
+    </section>
+
+    <section class="contact-section" id="contact">
+      <div class="contact-grid">
+        <div class="copy-card">
+          <p class="section-label">Contact Us</p>
+          <h2>Send a product or partnership enquiry</h2>
+          <p>Use the form to ask for a product to be featured, report a broken affiliate link, or send a general business enquiry.</p>
+          <ul class="contact-points">
+            <li>Affiliate product questions</li>
+            <li>Broken link reports</li>
+            <li>Brand and partnership requests</li>
+          </ul>
+        </div>
+        <form id="contact-form" class="contact-form copy-card">
+          <label>
+            <span>Name</span>
+            <input name="name" type="text" required placeholder="Your full name">
+          </label>
+          <label>
+            <span>Email</span>
+            <input name="email" type="email" required placeholder="you@example.com">
+          </label>
+          <label>
+            <span>Subject</span>
+            <input name="subject" type="text" required placeholder="Product request or partnership enquiry">
+          </label>
+          <label>
+            <span>Message</span>
+            <textarea name="message" rows="5" required placeholder="Tell us what you need help with"></textarea>
+          </label>
+          <div class="form-actions">
+            <button class="primary-cta compact" type="submit">Send Message</button>
+          </div>
+        </form>
       </div>
     </section>
 
@@ -96,7 +174,7 @@
         <div>
           <p class="section-label">Admin Workspace</p>
           <h2>Manage product content</h2>
-          <p class="workspace-copy">Both roles can sign in and manage items. All changes save to the live backend and stay available after a restart.</p>
+          <p class="workspace-copy">Both roles can sign in and manage items. All changes save to the live backend and stay available after a restart. Contact enquiries also appear in the inbox below.</p>
         </div>
         <div class="session-badge">
           <span id="auth-status">Not signed in</span>
@@ -202,6 +280,16 @@
           <div class="inventory-list" id="inventory-list"></div>
         </section>
       </div>
+
+      <section class="message-panel">
+        <div class="panel-top">
+          <div>
+            <p class="section-label">Inbox</p>
+            <h3>Contact messages</h3>
+          </div>
+        </div>
+        <div class="message-list" id="message-list"></div>
+      </section>
     </section>
   </main>
 

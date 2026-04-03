@@ -6,6 +6,7 @@ const crypto = require("crypto");
 const root = __dirname;
 const dataDir = path.join(root, "data");
 const productsFile = path.join(dataDir, "products.json");
+const messagesFile = path.join(dataDir, "messages.json");
 const port = process.env.PORT || 3000;
 
 const users = [
@@ -64,6 +65,42 @@ const fallbackProducts = [
     image: "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f37?auto=format&fit=crop&w=900&q=80",
     updatedAt: new Date().toISOString(),
   },
+  {
+    id: crypto.randomUUID(),
+    name: "Shark Stratos Upright Vacuum Cleaner",
+    soldBy: "Amazon UK",
+    brand: "Shark",
+    category: "Home",
+    price: 299.99,
+    affiliateUrl: "https://www.amazon.co.uk/",
+    description: "Powerful upright vacuum with anti-hair-wrap technology for carpets, stairs, and busy family homes.",
+    image: "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=900&q=80",
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "Ring Video Doorbell Plus",
+    soldBy: "Amazon UK",
+    brand: "Ring",
+    category: "Smart Home",
+    price: 149.99,
+    affiliateUrl: "https://www.amazon.co.uk/",
+    description: "Smart video doorbell with head-to-toe view, motion alerts, and app-based visitor monitoring.",
+    image: "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=900&q=80",
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "Philips Hue Starter Kit",
+    soldBy: "Amazon UK",
+    brand: "Philips Hue",
+    category: "Lighting",
+    price: 169.99,
+    affiliateUrl: "https://www.amazon.co.uk/",
+    description: "Easy smart lighting starter pack with coloured bulbs, bridge, and app automation for every room.",
+    image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80",
+    updatedAt: new Date().toISOString(),
+  },
 ];
 
 ensureDataFile();
@@ -117,6 +154,24 @@ async function handleApi(req, res, url) {
 
     if (req.method === "GET" && url.pathname === "/api/products") {
       return json(res, 200, { products: readProducts() });
+    }
+
+    if (req.method === "POST" && url.pathname === "/api/contact") {
+      const body = await readJsonBody(req);
+      const message = validateMessage(body);
+      message.id = crypto.randomUUID();
+      message.createdAt = new Date().toISOString();
+
+      const messages = readMessages();
+      messages.unshift(message);
+      writeMessages(messages);
+      return json(res, 201, { ok: true, message });
+    }
+
+    if (req.method === "GET" && url.pathname === "/api/contact") {
+      const user = requireAuth(req);
+      if (!user) return json(res, 401, { error: "Unauthorized" });
+      return json(res, 200, { messages: readMessages() });
     }
 
     if (req.method === "POST" && url.pathname === "/api/products") {
@@ -199,6 +254,7 @@ function resolvePath(urlPath) {
 function ensureDataFile() {
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
   if (!fs.existsSync(productsFile)) fs.writeFileSync(productsFile, JSON.stringify(fallbackProducts, null, 2));
+  if (!fs.existsSync(messagesFile)) fs.writeFileSync(messagesFile, JSON.stringify([], null, 2));
 }
 
 function readProducts() {
@@ -213,6 +269,20 @@ function readProducts() {
 
 function writeProducts(products) {
   fs.writeFileSync(productsFile, JSON.stringify(products, null, 2));
+}
+
+function readMessages() {
+  try {
+    const raw = fs.readFileSync(messagesFile, "utf8");
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeMessages(messages) {
+  fs.writeFileSync(messagesFile, JSON.stringify(messages, null, 2));
 }
 
 function requireAuth(req) {
@@ -247,6 +317,22 @@ function validateProduct(input) {
   if (!product.image) throw new Error("Product image is required.");
 
   return product;
+}
+
+function validateMessage(input) {
+  const message = {
+    name: String(input.name || "").trim(),
+    email: String(input.email || "").trim(),
+    subject: String(input.subject || "").trim(),
+    message: String(input.message || "").trim(),
+  };
+
+  if (!message.name) throw new Error("Name is required.");
+  if (!message.email || !message.email.includes("@")) throw new Error("A valid email is required.");
+  if (!message.subject) throw new Error("Subject is required.");
+  if (!message.message || message.message.length < 10) throw new Error("Message must be at least 10 characters.");
+
+  return message;
 }
 
 function readJsonBody(req) {
