@@ -4,6 +4,10 @@ const storageKeys = {
 };
 
 const content = window.PointMarketingContent || { articles: [], categories: [] };
+const siteState = {
+  articles: Array.isArray(content.articles) ? content.articles : [],
+  categories: Array.isArray(content.categories) ? content.categories : [],
+};
 
 document.addEventListener("DOMContentLoaded", async () => {
   renderShell();
@@ -218,11 +222,11 @@ async function renderPage() {
   const page = document.body.dataset.page;
 
   if (page === "home") {
-    renderHomePage();
+    await renderHomePage();
   } else if (page === "articles") {
-    renderArticlesPage();
+    await renderArticlesPage();
   } else if (page === "article") {
-    renderArticleDetailPage();
+    await renderArticleDetailPage();
   } else if (page === "categories") {
     renderCategoriesPage();
   } else if (page === "category") {
@@ -234,28 +238,48 @@ async function renderPage() {
   }
 }
 
-function renderHomePage() {
+async function ensureArticlesLoaded(force = false) {
+  if (!force && siteState.articles.length) return siteState.articles;
+
+  try {
+    const response = await fetch("/api/articles");
+    const data = await readResponseData(response);
+    if (response.ok && Array.isArray(data.articles) && data.articles.length) {
+      siteState.articles = data.articles;
+    }
+  } catch {
+    // Keep fallback content if live articles cannot be loaded.
+  }
+
+  return siteState.articles;
+}
+
+async function renderHomePage() {
   const articleWrap = document.getElementById("home-article-grid");
   const categoryWrap = document.getElementById("home-category-grid");
+  const articles = await ensureArticlesLoaded();
 
   if (articleWrap) {
-    articleWrap.innerHTML = content.articles
-      .slice(0, 3)
-      .map(
-        (article) => `
-          <article class="content-card">
-            <p class="eyebrow">${escapeHtml(article.category)}</p>
-            <h3>${escapeHtml(article.title)}</h3>
-            <p>${escapeHtml(article.summary)}</p>
-            <a class="text-link" href="/article.html?slug=${encodeURIComponent(article.slug)}">Read full guide</a>
-          </article>
-        `,
-      )
-      .join("");
+    articleWrap.innerHTML = articles.length
+      ? articles
+          .slice(0, 4)
+          .map(
+            (article) => `
+              <article class="content-card">
+                <p class="eyebrow">${escapeHtml(article.category)}</p>
+                <h3>${escapeHtml(article.title)}</h3>
+                <p>${escapeHtml(article.summary)}</p>
+                <a class="text-link" href="/article.html?slug=${encodeURIComponent(article.slug)}">Read full guide</a>
+              </article>
+            `,
+          )
+          .join("")
+      : `<article class="page-panel"><p>Articles are being prepared right now. Please check back shortly.</p></article>`;
   }
 
   if (categoryWrap) {
-    categoryWrap.innerHTML = content.categories
+    categoryWrap.innerHTML = siteState.categories
+      .slice(0, 8)
       .map(
         (category) => `
           <article class="content-card">
@@ -270,34 +294,53 @@ function renderHomePage() {
   }
 }
 
-function renderArticlesPage() {
+async function renderArticlesPage() {
   const wrap = document.getElementById("articles-grid");
   if (!wrap) return;
+  const articles = await ensureArticlesLoaded();
 
-  wrap.innerHTML = content.articles
-    .map(
-      (article) => `
-        <article class="content-card">
-          <p class="eyebrow">${escapeHtml(article.category)}</p>
-          <h3>${escapeHtml(article.title)}</h3>
-          <p>${escapeHtml(article.summary)}</p>
-          <div class="tag-row">
-            <span class="tag">Buying Guide</span>
-            <span class="tag">Reader First</span>
-          </div>
-          <a class="text-link" href="/article.html?slug=${encodeURIComponent(article.slug)}">Open guide</a>
-        </article>
-      `,
-    )
-    .join("");
+  wrap.innerHTML = articles.length
+    ? articles
+        .map(
+          (article) => `
+            <article class="content-card">
+              <p class="eyebrow">${escapeHtml(article.category)}</p>
+              <h3>${escapeHtml(article.title)}</h3>
+              <p>${escapeHtml(article.summary)}</p>
+              <div class="tag-row">
+                <span class="tag">Buying Guide</span>
+                <span class="tag">${escapeHtml(article.status === "draft" ? "Draft" : "Published")}</span>
+              </div>
+              <a class="text-link" href="/article.html?slug=${encodeURIComponent(article.slug)}">Open guide</a>
+            </article>
+          `,
+        )
+        .join("")
+    : `<article class="page-panel"><p>No articles are available yet.</p></article>`;
 }
 
-function renderArticleDetailPage() {
+async function renderArticleDetailPage() {
   const slug = new URLSearchParams(window.location.search).get("slug");
-  const article = content.articles.find((item) => item.slug === slug) || content.articles[0];
+  const articles = await ensureArticlesLoaded();
+  const article = articles.find((item) => item.slug === slug) || articles[0];
   const hero = document.getElementById("article-hero");
   const body = document.getElementById("article-body");
   const related = document.getElementById("related-articles");
+
+  if (!article) {
+    if (hero) {
+      hero.innerHTML = `
+        <p class="eyebrow">Article</p>
+        <h1>Article not found</h1>
+        <p class="lede">This guide could not be loaded. Please return to the articles page and choose another topic.</p>
+      `;
+    }
+    if (body) {
+      body.innerHTML = `<section class="page-panel"><p>The requested article is not available right now.</p></section>`;
+    }
+    if (related) related.innerHTML = "";
+    return;
+  }
 
   if (hero) {
     document.title = `${article.title} | Intellicons`;
@@ -374,7 +417,7 @@ function renderArticleDetailPage() {
   }
 
   if (related) {
-    related.innerHTML = content.articles
+    related.innerHTML = articles
       .filter((item) => item.slug !== article.slug)
       .slice(0, 3)
       .map(
@@ -395,7 +438,7 @@ function renderCategoriesPage() {
   const wrap = document.getElementById("categories-grid");
   if (!wrap) return;
 
-  wrap.innerHTML = content.categories
+  wrap.innerHTML = siteState.categories
     .map(
       (category) => `
         <article class="content-card">
@@ -411,7 +454,8 @@ function renderCategoriesPage() {
 
 async function renderCategoryDetailPage() {
   const slug = new URLSearchParams(window.location.search).get("slug");
-  const category = content.categories.find((item) => item.slug === slug) || content.categories[0];
+  await ensureArticlesLoaded();
+  const category = siteState.categories.find((item) => item.slug === slug) || siteState.categories[0];
   const hero = document.getElementById("category-hero");
   const sections = document.getElementById("category-sections");
   const productsWrap = document.getElementById("category-products");
@@ -471,11 +515,11 @@ async function renderCategoryDetailPage() {
   }
 
   const relatedArticleLink = document.getElementById("category-related-article");
-  const relatedArticle = content.articles.find((item) => item.slug === category.relatedArticle);
-  if (relatedArticleLink && relatedArticle) {
-    relatedArticleLink.innerHTML = `
-      <a class="text-link" href="/article.html?slug=${encodeURIComponent(relatedArticle.slug)}">Read the related guide: ${escapeHtml(relatedArticle.title)}</a>
-    `;
+  const relatedArticle = siteState.articles.find((item) => item.slug === category.relatedArticle);
+  if (relatedArticleLink) {
+    relatedArticleLink.innerHTML = relatedArticle
+      ? `<a class="text-link" href="/article.html?slug=${encodeURIComponent(relatedArticle.slug)}">Read the related guide: ${escapeHtml(relatedArticle.title)}</a>`
+      : `<p class="muted-note">This category is being expanded with more editorial guides.</p>`;
   }
 }
 

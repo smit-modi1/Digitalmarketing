@@ -17,7 +17,7 @@
       <div class="page-panel">
         <div class="page-title">
           <p class="eyebrow">Admin Dashboard</p>
-          <h1>Manage recommendations and reader enquiries.</h1>
+          <h1>Manage articles, recommendations, and reader enquiries.</h1>
           <p class="lede">This private dashboard is for the Intellicons operator only.</p>
         </div>
         <div class="admin-status" id="admin-status"></div>
@@ -60,7 +60,7 @@
             <div class="split-layout">
               <label>
                 <span>Category</span>
-                <input id="admin-category" name="category" type="text" required placeholder="Audio">
+                <input id="admin-category" name="category" type="text" list="category-suggestions" required placeholder="Electronics & Photo">
               </label>
               <label>
                 <span>Price (GBP)</span>
@@ -90,6 +90,103 @@
         </article>
       </div>
 
+      <div class="admin-grid">
+        <article class="admin-card">
+          <h2 id="admin-article-form-title">Publish article</h2>
+          <p>Use this form to add, edit, save as draft, or publish article content on the public site.</p>
+          <form class="admin-form" id="admin-article-form">
+            <div class="split-layout">
+              <label>
+                <span>Article title</span>
+                <input id="admin-article-title" name="title" type="text" required placeholder="Best Wireless Earbuds for Everyday Use in 2026">
+              </label>
+              <label>
+                <span>Slug</span>
+                <input id="admin-article-slug" name="slug" type="text" placeholder="best-wireless-earbuds-for-everyday-use-in-2026">
+              </label>
+            </div>
+            <div class="split-layout">
+              <label>
+                <span>Category</span>
+                <input id="admin-article-category" name="category" type="text" list="category-suggestions" required placeholder="Electronics & Photo">
+              </label>
+              <label>
+                <span>Status</span>
+                <select id="admin-article-status" name="status">
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              <span>Summary</span>
+              <textarea id="admin-article-summary" name="summary" rows="4" required placeholder="Short overview shown on article cards"></textarea>
+            </label>
+            <label>
+              <span>Problem this guide solves</span>
+              <textarea id="admin-article-problem" name="problem" rows="4" required placeholder="Explain the buying problem in plain language"></textarea>
+            </label>
+            <label>
+              <span>Introduction paragraphs</span>
+              <textarea id="admin-article-intro" name="intro" rows="5" required placeholder="Add one paragraph per line or separate with blank lines"></textarea>
+            </label>
+            <label>
+              <span>What to look for</span>
+              <textarea id="admin-article-look-for" name="whatToLookFor" rows="5" required placeholder="Add one buying factor per line"></textarea>
+            </label>
+            <label>
+              <span>Recommended picks</span>
+              <textarea id="admin-article-picks" name="picks" rows="5" required placeholder="One per line using: Product Name | Short explanation"></textarea>
+            </label>
+            <div class="split-layout">
+              <label>
+                <span>Pros</span>
+                <textarea id="admin-article-pros" name="pros" rows="5" required placeholder="Add one pro per line"></textarea>
+              </label>
+              <label>
+                <span>Cons</span>
+                <textarea id="admin-article-cons" name="cons" rows="5" required placeholder="Add one con per line"></textarea>
+              </label>
+            </div>
+            <label>
+              <span>Final recommendation</span>
+              <textarea id="admin-article-final" name="finalRecommendation" rows="4" required placeholder="Close with a natural final recommendation"></textarea>
+            </label>
+            <div class="split-layout">
+              <label>
+                <span>Link 1 label</span>
+                <input id="admin-article-link1-label" name="link1Label" type="text" placeholder="If you want a dependable option to compare, see...">
+              </label>
+              <label>
+                <span>Link 1 URL</span>
+                <input id="admin-article-link1-url" name="link1Url" type="url" placeholder="https://www.amazon.co.uk/...">
+              </label>
+            </div>
+            <div class="split-layout">
+              <label>
+                <span>Link 2 label</span>
+                <input id="admin-article-link2-label" name="link2Label" type="text" placeholder="Optional second natural Amazon link">
+              </label>
+              <label>
+                <span>Link 2 URL</span>
+                <input id="admin-article-link2-url" name="link2Url" type="url" placeholder="https://www.amazon.co.uk/...">
+              </label>
+            </div>
+            <div class="inline-actions">
+              <button class="button-primary" id="admin-article-save-button" type="submit">Publish Article</button>
+              <button class="button-secondary" id="admin-article-reset-button" type="button">Reset</button>
+              <button class="button-secondary hidden" id="admin-article-cancel-button" type="button">Cancel Edit</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="admin-card">
+          <h2>Current article library</h2>
+          <p>Published articles appear on the public site. Draft articles stay private until you publish them.</p>
+          <div class="inventory-list" id="article-list"></div>
+        </article>
+      </div>
+
       <section class="admin-card">
         <h2>Reader enquiries</h2>
         <p>Messages from the contact page are stored here. Email forwarding can also be added once SMTP credentials are provided.</p>
@@ -99,6 +196,7 @@
   </main>
   <div id="site-footer-slot"></div>
   <div id="site-modal-slot"></div>
+  <datalist id="category-suggestions"></datalist>
   <script src="/content.js"></script>
   <script src="/site.js"></script>
   <script src="/admin.js"></script>

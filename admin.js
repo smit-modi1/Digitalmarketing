@@ -1,23 +1,39 @@
 const siteApi = window.PointMarketingSite;
+const content = window.PointMarketingContent || { categories: [] };
 
 let adminState = {
   user: null,
   products: [],
+  articles: [],
   messages: [],
-  editingId: null,
+  editingProductId: null,
+  editingArticleId: null,
   uploadedImage: "",
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
   wireAdminEvents();
+  populateCategorySuggestions();
   await bootstrapAdmin();
 });
 
 function wireAdminEvents() {
   document.getElementById("admin-product-form")?.addEventListener("submit", handleProductSubmit);
-  document.getElementById("admin-reset-button")?.addEventListener("click", resetForm);
-  document.getElementById("admin-cancel-button")?.addEventListener("click", cancelEdit);
+  document.getElementById("admin-reset-button")?.addEventListener("click", resetProductForm);
+  document.getElementById("admin-cancel-button")?.addEventListener("click", cancelProductEdit);
   document.getElementById("admin-image-upload")?.addEventListener("change", handleImageUpload);
+  document.getElementById("admin-article-form")?.addEventListener("submit", handleArticleSubmit);
+  document.getElementById("admin-article-reset-button")?.addEventListener("click", resetArticleForm);
+  document.getElementById("admin-article-cancel-button")?.addEventListener("click", cancelArticleEdit);
+}
+
+function populateCategorySuggestions() {
+  const datalist = document.getElementById("category-suggestions");
+  if (!datalist) return;
+
+  datalist.innerHTML = (content.categories || [])
+    .map((category) => `<option value="${escapeAttribute(category.name)}"></option>`)
+    .join("");
 }
 
 async function bootstrapAdmin() {
@@ -37,7 +53,7 @@ async function bootstrapAdmin() {
     renderAdminHeader();
     lock?.classList.add("hidden");
     shell?.classList.remove("hidden");
-    await Promise.all([loadProducts(), loadMessages()]);
+    await Promise.all([loadProducts(), loadArticles(), loadMessages()]);
   } catch {
     siteApi.clearStoredSession();
     lock?.classList.remove("hidden");
@@ -63,6 +79,12 @@ async function loadProducts() {
   renderInventory();
 }
 
+async function loadArticles() {
+  const response = await siteApi.apiFetch("/api/articles");
+  adminState.articles = response.articles || [];
+  renderArticles();
+}
+
 async function loadMessages() {
   const response = await siteApi.apiFetch("/api/contact");
   adminState.messages = response.messages || [];
@@ -78,7 +100,7 @@ function renderInventory() {
         .map(
           (product) => `
             <article class="inventory-item">
-              <button class="inventory-main" type="button" data-select-id="${product.id}">
+              <button class="inventory-main" type="button" data-edit-id="${product.id}">
                 <img src="${escapeAttribute(product.image)}" alt="${escapeAttribute(product.name)}">
                 <div>
                   <strong>${escapeHtml(product.name)}</strong>
@@ -97,10 +119,42 @@ function renderInventory() {
     : `<article class="dashboard-lock"><p>No recommendations yet. Add your first product below.</p></article>`;
 
   wrap.querySelectorAll("[data-edit-id]").forEach((button) => {
-    button.addEventListener("click", () => startEdit(button.dataset.editId));
+    button.addEventListener("click", () => startProductEdit(button.dataset.editId));
   });
   wrap.querySelectorAll("[data-delete-id]").forEach((button) => {
     button.addEventListener("click", () => deleteProduct(button.dataset.deleteId));
+  });
+}
+
+function renderArticles() {
+  const wrap = document.getElementById("article-list");
+  if (!wrap) return;
+
+  wrap.innerHTML = adminState.articles.length
+    ? adminState.articles
+        .map(
+          (article) => `
+            <article class="inventory-item inventory-item-copy">
+              <div>
+                <strong>${escapeHtml(article.title)}</strong>
+                <p>${escapeHtml(article.category)} | ${escapeHtml(article.slug)}</p>
+              </div>
+              <span class="status-pill">${escapeHtml(article.status)}</span>
+              <div class="inventory-actions">
+                <button class="text-button" type="button" data-article-edit-id="${article.id}">Edit</button>
+                <button class="text-button danger-text" type="button" data-article-delete-id="${article.id}">Delete</button>
+              </div>
+            </article>
+          `,
+        )
+        .join("")
+    : `<article class="dashboard-lock"><p>No articles yet. Publish your first article below.</p></article>`;
+
+  wrap.querySelectorAll("[data-article-edit-id]").forEach((button) => {
+    button.addEventListener("click", () => startArticleEdit(button.dataset.articleEditId));
+  });
+  wrap.querySelectorAll("[data-article-delete-id]").forEach((button) => {
+    button.addEventListener("click", () => deleteArticle(button.dataset.articleDeleteId));
   });
 }
 
@@ -143,16 +197,16 @@ async function handleProductSubmit(event) {
   };
 
   try {
-    const method = adminState.editingId ? "PUT" : "POST";
-    const endpoint = adminState.editingId ? `/api/products?id=${encodeURIComponent(adminState.editingId)}` : "/api/products";
+    const method = adminState.editingProductId ? "PUT" : "POST";
+    const endpoint = adminState.editingProductId ? `/api/products?id=${encodeURIComponent(adminState.editingProductId)}` : "/api/products";
     const response = await siteApi.apiFetch(endpoint, {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
-    if (adminState.editingId) {
-      adminState.products = adminState.products.map((item) => (item.id === adminState.editingId ? response.product : item));
+    if (adminState.editingProductId) {
+      adminState.products = adminState.products.map((item) => (item.id === adminState.editingProductId ? response.product : item));
       siteApi.showToast("Product updated.");
     } else {
       adminState.products = [response.product, ...adminState.products];
@@ -160,17 +214,62 @@ async function handleProductSubmit(event) {
     }
 
     renderInventory();
-    resetForm();
+    resetProductForm();
   } catch (error) {
     siteApi.showToast(error.message || "Could not save product.");
   }
 }
 
-function startEdit(productId) {
+async function handleArticleSubmit(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+  const payload = {
+    title: String(formData.get("title") || "").trim(),
+    slug: String(formData.get("slug") || "").trim() || slugify(String(formData.get("title") || "")),
+    category: String(formData.get("category") || "").trim(),
+    status: String(formData.get("status") || "published").trim(),
+    summary: String(formData.get("summary") || "").trim(),
+    problem: String(formData.get("problem") || "").trim(),
+    intro: parseParagraphs(formData.get("intro")),
+    whatToLookFor: parseLines(formData.get("whatToLookFor")),
+    picks: parsePicks(formData.get("picks")),
+    pros: parseLines(formData.get("pros")),
+    cons: parseLines(formData.get("cons")),
+    finalRecommendation: String(formData.get("finalRecommendation") || "").trim(),
+    links: buildArticleLinks(formData),
+    clientArticles: adminState.articles,
+  };
+
+  try {
+    const method = adminState.editingArticleId ? "PUT" : "POST";
+    const endpoint = adminState.editingArticleId ? `/api/articles?id=${encodeURIComponent(adminState.editingArticleId)}` : "/api/articles";
+    const response = await siteApi.apiFetch(endpoint, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (adminState.editingArticleId) {
+      adminState.articles = adminState.articles.map((item) => (item.id === adminState.editingArticleId ? response.article : item));
+      siteApi.showToast(`Article ${response.article.status === "draft" ? "saved as draft" : "updated"}.`);
+    } else {
+      adminState.articles = [response.article, ...adminState.articles];
+      siteApi.showToast(response.article.status === "draft" ? "Draft article saved." : "Article published.");
+    }
+
+    renderArticles();
+    resetArticleForm();
+  } catch (error) {
+    siteApi.showToast(error.message || "Could not save article.");
+  }
+}
+
+function startProductEdit(productId) {
   const product = adminState.products.find((item) => item.id === productId);
   if (!product) return;
 
-  adminState.editingId = product.id;
+  adminState.editingProductId = product.id;
   adminState.uploadedImage = product.image;
 
   document.getElementById("admin-form-title").textContent = "Edit recommendation";
@@ -187,6 +286,33 @@ function startEdit(productId) {
   document.getElementById("admin-product-form").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+function startArticleEdit(articleId) {
+  const article = adminState.articles.find((item) => item.id === articleId);
+  if (!article) return;
+
+  adminState.editingArticleId = article.id;
+  document.getElementById("admin-article-form-title").textContent = "Edit article";
+  document.getElementById("admin-article-save-button").textContent = "Update Article";
+  document.getElementById("admin-article-cancel-button").classList.remove("hidden");
+  document.getElementById("admin-article-title").value = article.title;
+  document.getElementById("admin-article-slug").value = article.slug;
+  document.getElementById("admin-article-category").value = article.category;
+  document.getElementById("admin-article-status").value = article.status || "published";
+  document.getElementById("admin-article-summary").value = article.summary;
+  document.getElementById("admin-article-problem").value = article.problem;
+  document.getElementById("admin-article-intro").value = (article.intro || []).join("\n\n");
+  document.getElementById("admin-article-look-for").value = (article.whatToLookFor || []).join("\n");
+  document.getElementById("admin-article-picks").value = (article.picks || []).map((pick) => `${pick.name} | ${pick.text}`).join("\n");
+  document.getElementById("admin-article-pros").value = (article.pros || []).join("\n");
+  document.getElementById("admin-article-cons").value = (article.cons || []).join("\n");
+  document.getElementById("admin-article-final").value = article.finalRecommendation;
+  document.getElementById("admin-article-link1-label").value = article.links?.[0]?.label || "";
+  document.getElementById("admin-article-link1-url").value = article.links?.[0]?.url || "";
+  document.getElementById("admin-article-link2-label").value = article.links?.[1]?.label || "";
+  document.getElementById("admin-article-link2-url").value = article.links?.[1]?.url || "";
+  document.getElementById("admin-article-form").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 async function deleteProduct(productId) {
   const product = adminState.products.find((item) => item.id === productId);
   if (!product) return;
@@ -199,15 +325,34 @@ async function deleteProduct(productId) {
     });
     adminState.products = adminState.products.filter((item) => item.id !== productId);
     renderInventory();
-    if (adminState.editingId === productId) resetForm();
+    if (adminState.editingProductId === productId) resetProductForm();
     siteApi.showToast(`Removed ${product.name}.`);
   } catch (error) {
     siteApi.showToast(error.message || "Could not delete product.");
   }
 }
 
-function resetForm() {
-  adminState.editingId = null;
+async function deleteArticle(articleId) {
+  const article = adminState.articles.find((item) => item.id === articleId);
+  if (!article) return;
+
+  try {
+    await siteApi.apiFetch(`/api/articles?id=${encodeURIComponent(articleId)}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ clientArticles: adminState.articles }),
+    });
+    adminState.articles = adminState.articles.filter((item) => item.id !== articleId);
+    renderArticles();
+    if (adminState.editingArticleId === articleId) resetArticleForm();
+    siteApi.showToast(`Removed ${article.title}.`);
+  } catch (error) {
+    siteApi.showToast(error.message || "Could not delete article.");
+  }
+}
+
+function resetProductForm() {
+  adminState.editingProductId = null;
   adminState.uploadedImage = "";
   document.getElementById("admin-product-form")?.reset();
   document.getElementById("admin-form-title").textContent = "Add recommendation";
@@ -215,9 +360,23 @@ function resetForm() {
   document.getElementById("admin-cancel-button").classList.add("hidden");
 }
 
-function cancelEdit() {
-  resetForm();
-  siteApi.showToast("Edit cancelled.");
+function resetArticleForm() {
+  adminState.editingArticleId = null;
+  document.getElementById("admin-article-form")?.reset();
+  document.getElementById("admin-article-form-title").textContent = "Publish article";
+  document.getElementById("admin-article-save-button").textContent = "Publish Article";
+  document.getElementById("admin-article-status").value = "published";
+  document.getElementById("admin-article-cancel-button").classList.add("hidden");
+}
+
+function cancelProductEdit() {
+  resetProductForm();
+  siteApi.showToast("Product edit cancelled.");
+}
+
+function cancelArticleEdit() {
+  resetArticleForm();
+  siteApi.showToast("Article edit cancelled.");
 }
 
 function handleImageUpload(event) {
@@ -233,6 +392,53 @@ function handleImageUpload(event) {
     siteApi.showToast("Image uploaded.");
   };
   reader.readAsDataURL(file);
+}
+
+function buildArticleLinks(formData) {
+  return [
+    {
+      label: String(formData.get("link1Label") || "").trim(),
+      url: String(formData.get("link1Url") || "").trim(),
+    },
+    {
+      label: String(formData.get("link2Label") || "").trim(),
+      url: String(formData.get("link2Url") || "").trim(),
+    },
+  ].filter((link) => link.label && link.url);
+}
+
+function parseParagraphs(value) {
+  return String(value || "")
+    .split(/\n\s*\n|\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function parseLines(value) {
+  return String(value || "")
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function parsePicks(value) {
+  return parseLines(value)
+    .map((line) => {
+      const [name, ...rest] = line.split("|");
+      return {
+        name: String(name || "").trim(),
+        text: rest.join("|").trim(),
+      };
+    })
+    .filter((pick) => pick.name && pick.text);
+}
+
+function slugify(value) {
+  return String(value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 function formatPrice(price) {

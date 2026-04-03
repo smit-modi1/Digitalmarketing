@@ -37,7 +37,8 @@ a {
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -381,7 +382,8 @@ img {
 
 .search-input,
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   padding: 14px 15px;
   border-radius: 14px;
@@ -391,7 +393,8 @@ textarea {
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
   outline: 2px solid rgba(16, 35, 63, 0.12);
   border-color: var(--navy);
 }
