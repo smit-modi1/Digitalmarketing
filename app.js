@@ -47,6 +47,10 @@ function wireEvents() {
   document.getElementById("add-product-button").addEventListener("click", focusFormForNewItem);
   document.getElementById("search-input").addEventListener("input", (event) => {
     state.searchTerm = event.target.value.trim().toLowerCase();
+    if (state.searchTerm) {
+      state.activeCategory = "All";
+      renderCategories();
+    }
     renderProducts();
   });
   document.getElementById("image-upload").addEventListener("change", handleImageUpload);
@@ -456,6 +460,9 @@ async function handleSubmit(event) {
       showToast("Product added.");
     }
 
+    state.activeCategory = "All";
+    state.searchTerm = "";
+    document.getElementById("search-input").value = "";
     renderCategories();
     renderFeatureProduct();
     renderProducts();
