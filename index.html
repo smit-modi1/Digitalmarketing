@@ -3,361 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Point Marketing UK | Buying Guides, Product Reviews and Amazon Recommendations</title>
-  <meta name="description" content="Point Marketing UK publishes practical buying guides, comparisons and product recommendations to help readers make clearer shopping decisions.">
+  <title>Intellicons | Practical Buying Guides and Product Recommendations</title>
+  <meta name="description" content="Intellicons publishes practical buying guides, product comparisons, and genuine recommendations to help readers make clearer shopping decisions.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-  <div class="announcement-bar">Point Marketing UK is reader-supported. As an Amazon Associate, we may earn from qualifying purchases.</div>
+<body data-page="home" data-active="home">
+  <div id="site-header-slot"></div>
 
-  <header class="site-header">
-    <div class="brand-block">
-      <a class="brand" href="#top">Point Marketing UK</a>
-    </div>
-    <nav class="main-nav" aria-label="Primary">
-      <a href="#top">Home</a>
-      <a href="#articles">Articles</a>
-      <a href="#catalogue">Recommendations</a>
-      <a href="#about">About Us</a>
-      <a href="#privacy">Privacy Policy</a>
-      <a href="#contact">Contact Us</a>
-      <a href="#categories">Categories</a>
-    </nav>
-    <div class="header-actions">
-      <button class="sign-button" type="button" id="login-trigger">Sign In</button>
-      <button class="ghost-button hidden" type="button" id="logout-button">Logout</button>
-    </div>
-  </header>
-
-  <main class="page-shell" id="top">
-    <section class="hero-banner">
-      <div class="hero-card">
-        <p class="hero-kicker">Honest buying guides for everyday products</p>
-        <h1>Practical advice before you buy</h1>
-        <p id="hero-summary">Point Marketing UK publishes straightforward reviews, comparisons, and buying guides that help readers choose useful products with more confidence.</p>
-      </div>
-    </section>
-
-    <section class="audience-section">
-      <article class="audience-card">
-        <p class="section-label">What We Publish</p>
-        <h2>Useful recommendations, not hype</h2>
-        <p>We focus on products people actually shop for: audio, kitchen appliances, home office gear, and family essentials. Every guide is written to solve a real buying question in plain English.</p>
-      </article>
-      <article class="audience-card">
-        <p class="section-label">How We Use Links</p>
-        <h2>Affiliate links appear only where they fit naturally</h2>
-        <p>When a guide includes an Amazon link, it is there to help readers compare availability or current pricing, not to overwhelm the page. We aim to keep those links limited and relevant.</p>
-      </article>
-    </section>
-
-    <section class="overview-section">
-      <div class="overview-grid">
-        <article class="panel-frame">
-          <div class="panel-card product-visual">
-            <h2>Featured Pick</h2>
-            <div class="product-image-stage">
-              <img id="feature-image" src="" alt="Selected product image">
-            </div>
+  <main class="page-shell">
+    <section class="hero-section">
+      <div class="hero-layout">
+        <article class="hero-panel">
+          <p class="eyebrow">Intellicons</p>
+          <h1>Clearer product advice for everyday buying decisions.</h1>
+          <p class="lede">Intellicons publishes practical buying guides, comparisons, and recommendation pages built to help readers decide what is actually worth considering before they buy.</p>
+          <div class="hero-actions">
+            <a class="button-primary" href="/articles.html">Explore Articles</a>
+            <a class="button-secondary" href="/recommendations.html">See Recommendations</a>
           </div>
         </article>
-
-        <article class="panel-frame">
-          <div class="panel-card product-detail">
-            <h2>Why It Stands Out</h2>
-            <div class="detail-stack">
-              <p><strong>Product Name:</strong> <span id="feature-name"></span></p>
-              <p><strong>Category:</strong> <span id="feature-category"></span></p>
-              <p><strong>Brand:</strong> <span id="feature-brand"></span></p>
-              <p><strong>Sold by:</strong> <span id="feature-seller"></span></p>
-              <p><strong>Guide Price:</strong> <span id="feature-price"></span></p>
-              <p><strong>Overview:</strong> <span id="feature-description"></span></p>
-            </div>
-            <div class="detail-actions">
-              <a class="primary-cta" id="feature-link" href="#" target="_blank" rel="nofollow sponsored noopener noreferrer">Check price on Amazon</a>
-              <button class="secondary-cta" type="button" id="scroll-to-catalogue">Browse featured recommendations</button>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="insight-strip">
-      <article>
-        <strong>5</strong>
-        <span>Long-form buying guides written around real shopping questions</span>
-      </article>
-      <article>
-        <strong>Clear</strong>
-        <span>Affiliate disclosure and human-written product summaries</span>
-      </article>
-      <article>
-        <strong>UK</strong>
-        <span>Amazon.co.uk focused recommendations for UK readers</span>
-      </article>
-    </section>
-
-    <section class="info-section" id="articles">
-      <div class="section-intro">
-        <p class="section-label">Articles</p>
-        <h2>Genuine content that answers real user problems</h2>
-        <p>These guides are written to help visitors compare options, understand what matters before buying, and narrow down sensible choices without wading through vague marketing language.</p>
-      </div>
-      <div class="article-grid" id="article-grid"></div>
-      <div class="article-collection" id="article-collection"></div>
-    </section>
-
-    <section class="catalogue-section" id="catalogue">
-      <div class="catalogue-head">
-        <div>
-          <p class="section-label">Featured Recommendations</p>
-          <h2>Compare products by category</h2>
-        </div>
-        <div class="catalogue-tools">
-          <input id="search-input" type="search" placeholder="Search product, brand, seller, or category">
-          <div class="stats-inline">
-            <span>Products: <strong id="product-count">0</strong></span>
-            <span>Session: <strong id="session-summary">Guest</strong></span>
-          </div>
-        </div>
-      </div>
-      <div class="category-bar" id="categories">
-        <div class="category-chips" id="category-chips"></div>
-      </div>
-      <div class="category-directory">
-        <article class="category-info-card">
-          <h3>Audio</h3>
-          <p>Headphones and earbuds that balance comfort, battery life, call quality, and day-to-day value.</p>
-        </article>
-        <article class="category-info-card">
-          <h3>Kitchen</h3>
-          <p>Coffee makers, air fryers, and practical appliances that solve routine cooking and breakfast tasks.</p>
-        </article>
-        <article class="category-info-card">
-          <h3>Home Office</h3>
-          <p>Desk setup essentials that can make long hours more comfortable and less tiring.</p>
-        </article>
-        <article class="category-info-card">
-          <h3>Parenting</h3>
-          <p>Simple, reliable products for families who want clear features instead of unnecessary complexity.</p>
-        </article>
-      </div>
-      <div class="product-grid" id="product-grid"></div>
-      <div class="empty-state hidden" id="empty-state">
-        <h3>No products found</h3>
-        <p>Try another search or category, or adjust the featured recommendations from the private admin workspace.</p>
-      </div>
-    </section>
-
-    <section class="info-section split-section" id="about">
-      <div class="copy-card">
-        <p class="section-label">About Us</p>
-        <h2>About Point Marketing UK</h2>
-        <p>Point Marketing UK publishes practical, easy-to-understand content for people who want clear advice before they buy. Our articles focus on real-world usefulness, not hype. We cover product reviews, comparisons, buying guides, and everyday recommendations that help readers choose with confidence.</p>
-        <p>We aim to keep every article honest, specific, and helpful. That means we explain what a product is good for, where it falls short, and who it is best suited for. We also update content when needed so visitors can rely on the information they read here.</p>
-        <p>Our goal is simple: make shopping decisions easier by turning research into clear guidance.</p>
-        <p><strong>As an Amazon Associate, we may earn from qualifying purchases.</strong></p>
-      </div>
-      <div class="copy-card" id="privacy">
-        <p class="section-label">Privacy Policy</p>
-        <h2>Privacy Policy</h2>
-        <p>Point Marketing UK respects your privacy. If you contact us, we may collect your name, email address, and message so we can reply. We may also collect basic website usage information through cookies or analytics tools to understand how visitors use our site.</p>
-        <p>We use this information to respond to inquiries, improve website content, and monitor site performance.</p>
-        <p>We may use affiliate links, including Amazon links, on some pages. If you click one of those links and make a purchase, we may earn a commission at no extra cost to you.</p>
-        <p><strong>As an Amazon Associate, we earn from qualifying purchases.</strong></p>
-        <p>If you have questions about this Privacy Policy, please use the contact form on this page.</p>
-      </div>
-    </section>
-
-    <section class="contact-section" id="contact">
-      <div class="contact-grid">
-        <div class="copy-card">
-          <p class="section-label">Contact Us</p>
-          <h2>Have a question, suggestion, or correction?</h2>
-          <p>We’d love to hear from you. The quickest way to contact Point Marketing UK is through the form below. We review messages regularly and try to respond as soon as possible.</p>
-          <ul class="contact-points">
-            <li>Questions about a guide or recommendation</li>
-            <li>Corrections or update suggestions</li>
-            <li>Broken link reports</li>
+        <aside class="hero-visual">
+          <p class="eyebrow">Why readers use us</p>
+          <h2>Useful, human, and grounded in real use.</h2>
+          <ul>
+            <li>Buying guides that answer real questions rather than repeating product specs.</li>
+            <li>Recommendations written in plain English and focused on practical trade-offs.</li>
+            <li>Affiliate links only where they fit naturally and genuinely help the reader.</li>
           </ul>
-          <div class="contact-meta">
-            <p><strong>What this form is for:</strong> reader feedback, editorial suggestions, and general website enquiries</p>
-            <p><strong>Typical response window:</strong> as soon as possible, usually within 1 to 2 working days</p>
-            <p><strong>Good to know:</strong> purchases are completed on Amazon, not on this website</p>
-          </div>
-        </div>
-        <form id="contact-form" class="contact-form copy-card">
-          <label>
-            <span>Name</span>
-            <input name="name" type="text" required placeholder="Your full name">
-          </label>
-          <label>
-            <span>Email</span>
-            <input name="email" type="email" required placeholder="you@example.com">
-          </label>
-          <label>
-            <span>Subject</span>
-            <input name="subject" type="text" required placeholder="Question, suggestion, or correction">
-          </label>
-          <label>
-            <span>Message</span>
-            <textarea name="message" rows="5" required placeholder="Tell us what you would like to share"></textarea>
-          </label>
-          <div class="form-actions">
-            <button class="primary-cta compact" type="submit">Send Message</button>
-          </div>
-        </form>
+        </aside>
       </div>
     </section>
 
-    <section class="workspace-section hidden" id="workspace">
-      <div class="workspace-head">
-        <div>
-          <p class="section-label">Admin Workspace</p>
-          <h2>Private editor dashboard</h2>
-          <p class="workspace-copy">This private login is for the site operator only. Use it to manage featured products and review contact enquiries without exposing admin tools on the public site.</p>
-        </div>
-        <div class="session-badge">
-          <span id="auth-status">Not signed in</span>
-          <strong id="active-user-name">Guest Visitor</strong>
-          <small id="active-user-role">signed_out</small>
-        </div>
+    <section class="page-panel">
+      <div class="page-title">
+        <p class="eyebrow">What We Do</p>
+        <h1>Helpful research without the noise.</h1>
+        <p class="lede">We cover common shopping categories such as audio, kitchen appliances, home office gear, and family essentials. The goal is simple: make it easier to compare options and choose something sensible.</p>
       </div>
-
-      <div class="workspace-grid">
-        <section class="manager-panel">
-          <div class="workspace-lock" id="workspace-lock">
-            <strong>Login required</strong>
-            <p id="auth-hint">Sign in as masteradmin to manage featured product recommendations.</p>
-          </div>
-
-          <div class="panel-top">
-            <div>
-              <p class="section-label">Editor</p>
-              <h3 id="form-title">Add Product</h3>
-            </div>
-            <div class="editor-actions">
-              <button class="secondary-cta compact hidden" type="button" id="cancel-edit">Cancel Edit</button>
-              <button class="primary-cta compact" type="button" id="add-product-button">New Item</button>
-            </div>
-          </div>
-
-          <form id="product-form" class="product-form">
-            <label>
-              <span>Product image</span>
-              <input id="image-upload" type="file" accept="image/*">
-              <small>Upload an image or provide an image URL below.</small>
-            </label>
-
-            <label>
-              <span>Image URL</span>
-              <input id="image-url" name="imageUrl" type="url" placeholder="https://example.com/product.jpg">
-            </label>
-
-            <label>
-              <span>Product name</span>
-              <input id="product-name" name="name" type="text" required placeholder="Product title">
-            </label>
-
-            <div class="form-split">
-              <label>
-                <span>Sold by</span>
-                <input id="sold-by" name="soldBy" type="text" required placeholder="Amazon UK">
-              </label>
-              <label>
-                <span>Brand name</span>
-                <input id="brand" name="brand" type="text" required placeholder="Brand">
-              </label>
-            </div>
-
-            <div class="form-split">
-              <label>
-                <span>Category</span>
-                <input id="category" name="category" type="text" required placeholder="Audio">
-              </label>
-              <label>
-                <span>Price (GBP)</span>
-                <input id="price" name="price" type="number" min="0" step="0.01" required placeholder="149.99">
-              </label>
-            </div>
-
-            <label>
-              <span>Amazon link</span>
-              <input id="affiliate-url" name="affiliateUrl" type="url" required placeholder="https://www.amazon.co.uk/...">
-            </label>
-
-            <label>
-              <span>Short summary</span>
-              <textarea id="description" name="description" rows="4" placeholder="Short, useful product description for readers"></textarea>
-            </label>
-
-            <div class="form-actions">
-              <button class="primary-cta compact" type="submit" id="save-product-button">Save Product</button>
-              <button class="secondary-cta compact" type="button" id="reset-form-button">Reset</button>
-            </div>
-          </form>
-        </section>
-
-        <section class="manager-panel">
-          <div class="panel-top">
-            <div>
-              <p class="section-label">Inventory</p>
-              <h3>Current recommendation list</h3>
-            </div>
-          </div>
-          <div class="inventory-list" id="inventory-list"></div>
-        </section>
-      </div>
-
-      <section class="message-panel">
-        <div class="panel-top">
-          <div>
-            <p class="section-label">Inbox</p>
-            <h3>Reader messages</h3>
-          </div>
-        </div>
-        <div class="message-list" id="message-list"></div>
-      </section>
     </section>
+
+    <section class="home-grid" id="home-article-grid"></section>
+
+    <section class="page-panel">
+      <div class="page-title">
+        <p class="eyebrow">Categories</p>
+        <h1>Browse by topic.</h1>
+        <p class="lede">Use category pages to narrow down recommendations by need, then move into detailed guides if you want more context before clicking through.</p>
+      </div>
+    </section>
+
+    <section class="card-grid" id="home-category-grid"></section>
   </main>
 
-  <footer class="site-footer">
-    <div>
-      <strong>Point Marketing UK</strong>
-      <p>Buying guides, product recommendations, and practical research for everyday shoppers.</p>
-    </div>
-    <div>
-      <strong>Disclosure</strong>
-      <p>As an Amazon Associate, we earn from qualifying purchases. Prices and availability can change at any time.</p>
-    </div>
-  </footer>
-
-  <div class="modal-backdrop hidden" id="login-modal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="login-title">
-      <button class="modal-close" type="button" id="close-login-modal" aria-label="Close login">&times;</button>
-      <p class="section-label">Sign in</p>
-      <h2 id="login-title">Access the workspace</h2>
-      <p>Private editor login for managing featured recommendations and reviewing reader enquiries.</p>
-      <form id="login-form" class="product-form">
-        <label>
-          <span>Username</span>
-          <input name="username" type="text" required placeholder="masteradmin">
-        </label>
-        <label>
-          <span>Password</span>
-          <input name="password" type="password" required placeholder="admin123">
-        </label>
-        <div class="form-actions">
-          <button class="primary-cta compact" type="submit">Sign In</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="app.js"></script>
+  <div id="site-footer-slot"></div>
+  <div id="site-modal-slot"></div>
+  <script src="/content.js"></script>
+  <script src="/site.js"></script>
 </body>
 </html>

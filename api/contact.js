@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 
 const { getSessionUser } = require("../lib/auth");
+const { sendContactEmail } = require("../lib/email");
 const { readJsonBody, sendJson } = require("../lib/http");
 const { getMessages, saveMessages } = require("../lib/store");
 
@@ -26,7 +27,8 @@ module.exports = async (req, res) => {
       const messages = await getMessages();
       messages.unshift(message);
       await saveMessages(messages);
-      sendJson(res, 201, { ok: true, message });
+      const emailDelivered = await sendContactEmail(message).catch(() => false);
+      sendJson(res, 201, { ok: true, message, emailDelivered });
       return;
     }
 

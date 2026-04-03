@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Intellicons</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body data-page="admin" data-active="">
+  <div id="site-header-slot"></div>
+  <main class="page-shell">
+    <section class="page-intro">
+      <div class="page-panel">
+        <div class="page-title">
+          <p class="eyebrow">Admin Dashboard</p>
+          <h1>Manage recommendations and reader enquiries.</h1>
+          <p class="lede">This private dashboard is for the Intellicons operator only.</p>
+        </div>
+        <div class="admin-status" id="admin-status"></div>
+      </div>
+    </section>
+
+    <section class="dashboard-lock hidden" id="dashboard-lock">
+      <h2>Sign in required</h2>
+      <p>This page is private. Use the sign-in button to access the Intellicons dashboard.</p>
+    </section>
+
+    <section id="dashboard-shell">
+      <div class="admin-grid">
+        <article class="admin-card">
+          <h2 id="admin-form-title">Add recommendation</h2>
+          <p>Use this form to manage the public recommendation list shown across the site.</p>
+          <form class="admin-form" id="admin-product-form">
+            <label>
+              <span>Product image</span>
+              <input id="admin-image-upload" type="file" accept="image/*">
+            </label>
+            <label>
+              <span>Image URL</span>
+              <input id="admin-image-url" name="imageUrl" type="url" placeholder="https://example.com/product.jpg">
+            </label>
+            <label>
+              <span>Product name</span>
+              <input id="admin-product-name" name="name" type="text" required placeholder="Product title">
+            </label>
+            <div class="split-layout">
+              <label>
+                <span>Sold by</span>
+                <input id="admin-sold-by" name="soldBy" type="text" required placeholder="Amazon UK">
+              </label>
+              <label>
+                <span>Brand</span>
+                <input id="admin-brand" name="brand" type="text" required placeholder="Brand name">
+              </label>
+            </div>
+            <div class="split-layout">
+              <label>
+                <span>Category</span>
+                <input id="admin-category" name="category" type="text" required placeholder="Audio">
+              </label>
+              <label>
+                <span>Price (GBP)</span>
+                <input id="admin-price" name="price" type="number" step="0.01" min="0" required placeholder="99.99">
+              </label>
+            </div>
+            <label>
+              <span>Amazon URL</span>
+              <input id="admin-affiliate-url" name="affiliateUrl" type="url" required placeholder="https://www.amazon.co.uk/...">
+            </label>
+            <label>
+              <span>Short summary</span>
+              <textarea id="admin-description" name="description" rows="5" placeholder="Useful description for readers"></textarea>
+            </label>
+            <div class="inline-actions">
+              <button class="button-primary" id="admin-save-button" type="submit">Save Recommendation</button>
+              <button class="button-secondary" id="admin-reset-button" type="button">Reset</button>
+              <button class="button-secondary hidden" id="admin-cancel-button" type="button">Cancel Edit</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="admin-card">
+          <h2>Current recommendation list</h2>
+          <p>These entries feed the public recommendation pages and category pages.</p>
+          <div class="inventory-list" id="inventory-list"></div>
+        </article>
+      </div>
+
+      <section class="admin-card">
+        <h2>Reader enquiries</h2>
+        <p>Messages from the contact page are stored here. Email forwarding can also be added once SMTP credentials are provided.</p>
+        <div class="message-list" id="message-list"></div>
+      </section>
+    </section>
+  </main>
+  <div id="site-footer-slot"></div>
+  <div id="site-modal-slot"></div>
+  <script src="/content.js"></script>
+  <script src="/site.js"></script>
+  <script src="/admin.js"></script>
+</body>
+</html>

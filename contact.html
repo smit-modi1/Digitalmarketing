@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | Intellicons</title>
+  <meta name="description" content="Contact Intellicons with questions, suggestions, broken link reports, or editorial feedback.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body data-page="contact" data-active="contact">
+  <div id="site-header-slot"></div>
+  <main class="page-shell">
+    <section class="page-intro">
+      <div class="page-panel">
+        <div class="page-title">
+          <p class="eyebrow">Contact Us</p>
+          <h1>Questions, suggestions, and corrections are welcome.</h1>
+          <p class="lede">If you want to suggest a topic, report a broken link, or share feedback on a guide, you can use the contact form below or email us directly.</p>
+        </div>
+      </div>
+    </section>
+    <section class="contact-layout">
+      <article class="page-panel">
+        <h2>Contact information</h2>
+        <p><strong>Email:</strong> <a class="text-link" href="mailto:info.intellicons@gmail.com">info.intellicons@gmail.com</a></p>
+        <p>We review messages regularly and try to respond as soon as possible.</p>
+        <div id="contact-sidebar"></div>
+      </article>
+      <article class="page-panel">
+        <h2>Send a message</h2>
+        <form class="contact-form" id="contact-form">
+          <label>
+            <span>Name</span>
+            <input name="name" type="text" required placeholder="Your name">
+          </label>
+          <label>
+            <span>Email</span>
+            <input name="email" type="email" required placeholder="you@example.com">
+          </label>
+          <label>
+            <span>Subject</span>
+            <input name="subject" type="text" required placeholder="What would you like to ask about?">
+          </label>
+          <label>
+            <span>Message</span>
+            <textarea name="message" rows="6" required placeholder="Share your question, correction, or suggestion"></textarea>
+          </label>
+          <div class="inline-actions">
+            <button class="button-primary" type="submit">Send Message</button>
+          </div>
+        </form>
+      </article>
+    </section>
+  </main>
+  <div id="site-footer-slot"></div>
+  <div id="site-modal-slot"></div>
+  <script src="/content.js"></script>
+  <script src="/site.js"></script>
+</body>
+</html>

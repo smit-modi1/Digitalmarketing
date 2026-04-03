@@ -1,14 +1,13 @@
-# Point Marketing UK
+# Intellicons
 
-Fully functional UK Amazon affiliate website with:
+Multi-page affiliate content site with:
 
-- one private operator login: `masteradmin`
-- login-protected product management
-- add, edit, and delete product flow
-- product image upload or image URL support
-- persistent JSON-backed storage locally and Vercel Blob storage in production
-- public product overview and catalogue UI
-- buyer and brand-client positioning with a public contact form and private inbox
+- separate public pages for Home, Articles, Recommendations, About Us, Privacy Policy, Contact Us, and Categories
+- dedicated article and category detail pages
+- a private admin dashboard for managing recommendations
+- persistent product and contact storage
+- Vercel-ready API routes for login, products, and contact submissions
+- optional Gmail delivery support for contact form messages
 
 ## Run locally
 
@@ -18,8 +17,16 @@ npm start
 
 Use Node.js 20 or newer.
 
-If port `3000` is already in use, set a different `PORT` value before starting.
+## Admin login
 
-## Demo logins
+- `masteradmin` / `admin123`
 
-- Master Admin: `masteradmin` / `admin123`
+## Optional email delivery
+
+To send contact form messages to Gmail in addition to storing them in the admin inbox, set:
+
+- `EMAIL_SMTP_USER`
+- `EMAIL_SMTP_PASS`
+- `CONTACT_INBOX_EMAIL`
+
+If those are not set, messages are still saved in the dashboard inbox.

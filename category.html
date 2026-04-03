@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Category | Intellicons</title>
+  <meta name="description" content="Explore an Intellicons category page with recommendations and related guide content.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body data-page="category" data-active="categories">
+  <div id="site-header-slot"></div>
+  <main class="page-shell">
+    <section class="page-intro">
+      <div class="page-panel page-title" id="category-hero"></div>
+    </section>
+    <section class="category-section-grid" id="category-sections"></section>
+    <section class="page-panel">
+      <div class="page-title">
+        <p class="eyebrow">Related Article</p>
+        <h1>Read the matching guide.</h1>
+      </div>
+      <div id="category-related-article"></div>
+    </section>
+    <section class="page-panel">
+      <div class="page-title">
+        <p class="eyebrow">Recommendations</p>
+        <h1>Current products in this category.</h1>
+      </div>
+      <div class="card-grid" id="category-products"></div>
+    </section>
+  </main>
+  <div id="site-footer-slot"></div>
+  <div id="site-modal-slot"></div>
+  <script src="/content.js"></script>
+  <script src="/site.js"></script>
+</body>
+</html>
