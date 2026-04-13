@@ -1,4 +1,4 @@
-# Intellicons
+# Ukshoppinghub
 
 Multi-page affiliate content site with:
 

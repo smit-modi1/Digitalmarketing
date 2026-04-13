@@ -3,11 +3,13 @@ const storageKeys = {
   sessionUser: "affiliate-uk-session-user-v1",
 };
 
-const content = window.PointMarketingContent || { articles: [], categories: [] };
+const content = window.UkshoppinghubContent || { articles: [], categories: [] };
 const siteState = {
   articles: Array.isArray(content.articles) ? content.articles : [],
   categories: Array.isArray(content.categories) ? content.categories : [],
 };
+const brandName = "Ukshoppinghub";
+const contactEmail = "info.ukshoppinghub@gmail.com";
 const mobileMenuQuery = typeof window !== "undefined" && window.matchMedia ? window.matchMedia("(max-width: 860px)") : null;
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -25,10 +27,10 @@ function renderShell() {
 
   if (headerTarget) {
     headerTarget.innerHTML = `
-      <div class="announcement-bar">Intellicons is reader-supported. As an Amazon Associate, we may earn from qualifying purchases.</div>
+      <div class="announcement-bar">${brandName} is reader-supported. As an Amazon Associate, we may earn from qualifying purchases.</div>
       <header class="site-header">
         <div class="brand-block">
-          <a class="brand" href="/index.html">Intellicons</a>
+          <a class="brand" href="/index.html">${brandName}</a>
         </div>
         <button class="nav-toggle" type="button" id="nav-toggle" aria-expanded="false" aria-controls="primary-nav">
           <span class="nav-toggle-lines" aria-hidden="true">
@@ -60,12 +62,29 @@ function renderShell() {
     footerTarget.innerHTML = `
       <footer class="site-footer">
         <div class="footer-block">
-          <strong>Intellicons</strong>
+          <strong>${brandName}</strong>
           <p>Practical buying guides, product comparisons, and everyday recommendations designed to help readers make clearer shopping decisions.</p>
         </div>
         <div class="footer-block">
           <strong>Disclosure</strong>
           <p>As an Amazon Associate, we earn from qualifying purchases. Prices and availability can change, so always check current details before you buy.</p>
+        </div>
+        <div class="footer-block">
+          <strong>Weekly Newsletter</strong>
+          <p>Subscribe for one useful weekly email featuring fresh articles, practical picks, and reader-friendly buying advice.</p>
+          <form class="stack-form" id="newsletter-subscribe-form">
+            <label>
+              <span>Name</span>
+              <input name="name" type="text" placeholder="Your name">
+            </label>
+            <label>
+              <span>Email</span>
+              <input name="email" type="email" required placeholder="you@example.com">
+            </label>
+            <div class="inline-actions">
+              <button class="button-primary" type="submit">Subscribe</button>
+            </div>
+          </form>
         </div>
       </footer>
     `;
@@ -78,11 +97,11 @@ function renderShell() {
           <button class="modal-close" type="button" id="close-login-modal" aria-label="Close login">&times;</button>
           <p class="eyebrow">Private Access</p>
           <h2 id="login-title">Sign in to the dashboard</h2>
-          <p>This login is for the site operator only. Public readers can browse guides and recommendations without an account.</p>
+          <p>This login is for ${brandName} administrators only. Public readers can browse guides, recommendations, and newsletter signup without an account.</p>
           <form id="login-form" class="stack-form">
             <label>
-              <span>Username</span>
-              <input name="username" type="text" required placeholder="masteradmin">
+              <span>Email or Username</span>
+              <input name="username" type="text" required placeholder="masteradmin or admin email">
             </label>
             <label>
               <span>Password</span>
@@ -116,6 +135,7 @@ function wireGlobalEvents() {
   document.getElementById("login-form")?.addEventListener("submit", handleLogin);
   document.getElementById("logout-button")?.addEventListener("click", handleLogout);
   document.getElementById("contact-form")?.addEventListener("submit", handleContactSubmit);
+  document.getElementById("newsletter-subscribe-form")?.addEventListener("submit", handleNewsletterSubscribe);
   mobileMenuQuery?.addEventListener?.("change", syncMobileMenuToViewport);
   syncMobileMenuToViewport();
 }
@@ -232,6 +252,31 @@ async function handleContactSubmit(event) {
   } catch (error) {
     showToast(error.message || "Could not send message.");
     return null;
+  }
+}
+
+async function handleNewsletterSubscribe(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+
+  try {
+    const response = await fetch("/api/subscribers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.get("name"),
+        email: formData.get("email"),
+      }),
+    });
+
+    const data = await readResponseData(response);
+    if (!response.ok) throw new Error(data.error || "Could not subscribe right now.");
+
+    form.reset();
+    showToast(data.message || "Subscription confirmed.");
+  } catch (error) {
+    showToast(error.message || "Could not subscribe right now.");
   }
 }
 
@@ -360,7 +405,7 @@ async function renderArticleDetailPage() {
   }
 
   if (hero) {
-    document.title = `${article.title} | Intellicons`;
+    document.title = `${article.title} | ${brandName}`;
     hero.innerHTML = `
       <p class="eyebrow">${escapeHtml(article.category)}</p>
       <h1>${escapeHtml(article.title)}</h1>
@@ -478,7 +523,7 @@ async function renderCategoryDetailPage() {
   const productsWrap = document.getElementById("category-products");
 
   if (hero) {
-    document.title = `${category.name} | Intellicons`;
+    document.title = `${category.name} | ${brandName}`;
     hero.innerHTML = `
       <p class="eyebrow">Category</p>
       <h1>${escapeHtml(category.name)}</h1>
@@ -652,7 +697,7 @@ function renderContactSidebar() {
     </article>
     <article class="sub-card">
       <h3>Important note</h3>
-      <p>Purchases are completed on Amazon, not on this website. If an order issue relates to shipping or returns, Amazon support will usually be the right place to check first.</p>
+      <p>Purchases are completed on Amazon, not on this website. If an order issue relates to shipping or returns, Amazon support will usually be the right place to check first. For editorial or partnership requests, email ${contactEmail}.</p>
     </article>
   `;
 }
@@ -776,7 +821,7 @@ function escapeAttribute(value) {
   return escapeHtml(value);
 }
 
-window.PointMarketingSite = {
+window.UkshoppinghubSite = {
   apiFetch,
   clearStoredSession,
   getStoredToken,

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard | Intellicons</title>
+  <title>Admin Dashboard | Ukshoppinghub</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,8 +17,8 @@
       <div class="page-panel">
         <div class="page-title">
           <p class="eyebrow">Admin Dashboard</p>
-          <h1>Manage articles, recommendations, and reader enquiries.</h1>
-          <p class="lede">This private dashboard is for the Intellicons operator only.</p>
+          <h1>Manage products, articles, users, and newsletter subscribers.</h1>
+          <p class="lede">This private dashboard is for Ukshoppinghub administrators only.</p>
         </div>
         <div class="admin-status" id="admin-status"></div>
       </div>
@@ -26,12 +26,17 @@
 
     <section class="dashboard-lock hidden" id="dashboard-lock">
       <h2>Sign in required</h2>
-      <p>This page is private. Use the sign-in button to access the Intellicons dashboard.</p>
+      <p>This page is private. Use the sign-in button to access the Ukshoppinghub dashboard.</p>
     </section>
 
     <section id="dashboard-shell">
+      <section class="admin-card hidden" id="restricted-note">
+        <h2>Restricted sub-admin access</h2>
+        <p>Your account can review enquiries and subscribers, but product changes, article publishing, newsletter sending, and user management are reserved for the master admin.</p>
+      </section>
+
       <div class="admin-grid">
-        <article class="admin-card">
+        <article class="admin-card" id="product-form-card">
           <h2 id="admin-form-title">Add recommendation</h2>
           <p>Use this form to manage the public recommendation list shown across the site.</p>
           <form class="admin-form" id="admin-product-form">
@@ -91,7 +96,7 @@
       </div>
 
       <div class="admin-grid">
-        <article class="admin-card">
+        <article class="admin-card" id="article-form-card">
           <h2 id="admin-article-form-title">Publish article</h2>
           <p>Use this form to add, edit, save as draft, or publish article content on the public site.</p>
           <form class="admin-form" id="admin-article-form">
@@ -184,6 +189,73 @@
           <h2>Current article library</h2>
           <p>Published articles appear on the public site. Draft articles stay private until you publish them.</p>
           <div class="inventory-list" id="article-list"></div>
+        </article>
+      </div>
+
+      <div class="admin-grid">
+        <article class="admin-card" id="user-management-card">
+          <h2>Create sub-admin</h2>
+          <p>Master admin can create restricted sub-admin accounts with name, contact number, email, and login password.</p>
+          <form class="admin-form" id="admin-user-form">
+            <div class="split-layout">
+              <label>
+                <span>Name</span>
+                <input id="subadmin-name" name="name" type="text" placeholder="Sub-admin name">
+              </label>
+              <label>
+                <span>Contact number</span>
+                <input id="subadmin-contact" name="contactNumber" type="text" placeholder="+44 ...">
+              </label>
+            </div>
+            <div class="split-layout">
+              <label>
+                <span>Email ID</span>
+                <input id="subadmin-email" name="email" type="email" placeholder="subadmin@example.com">
+              </label>
+              <label>
+                <span>Password</span>
+                <input id="subadmin-password" name="password" type="password" placeholder="At least 8 characters">
+              </label>
+            </div>
+            <div class="inline-actions">
+              <button class="button-primary" type="submit">Create Sub-Admin</button>
+              <button class="button-secondary" id="admin-user-reset-button" type="button">Reset</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="admin-card" id="admin-user-list-card">
+          <h2>Admin users</h2>
+          <p>Master admin appears at the top. Sub-admins are restricted to read-only operational access unless you expand permissions later.</p>
+          <div class="inventory-list" id="admin-user-list"></div>
+        </article>
+      </div>
+
+      <div class="admin-grid">
+        <article class="admin-card" id="newsletter-card">
+          <h2>Newsletter sender</h2>
+          <p>Send a manual campaign now or trigger this week&apos;s digest using the latest published articles.</p>
+          <form class="admin-form" id="newsletter-form">
+            <label>
+              <span>Newsletter subject</span>
+              <input id="newsletter-subject" name="subject" type="text" placeholder="This week&apos;s picks from Ukshoppinghub">
+            </label>
+            <label>
+              <span>Newsletter body</span>
+              <textarea id="newsletter-body" name="body" rows="6" placeholder="Write a natural update for subscribers"></textarea>
+            </label>
+            <div class="inline-actions">
+              <button class="button-primary" type="submit">Send Manual Newsletter</button>
+              <button class="button-secondary" id="weekly-newsletter-button" type="button">Send Weekly Digest Now</button>
+            </div>
+          </form>
+          <div class="inventory-list" id="newsletter-log-list"></div>
+        </article>
+
+        <article class="admin-card" id="subscriber-card">
+          <h2>Subscribed users</h2>
+          <p>People who subscribe on the public site appear here. You can keep the list clean and use it for weekly updates.</p>
+          <div class="inventory-list" id="subscriber-list"></div>
         </article>
       </div>
 

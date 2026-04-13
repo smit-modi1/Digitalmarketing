@@ -1,11 +1,14 @@
-const siteApi = window.PointMarketingSite;
-const content = window.PointMarketingContent || { categories: [] };
+const siteApi = window.UkshoppinghubSite;
+const content = window.UkshoppinghubContent || { categories: [] };
 
 let adminState = {
   user: null,
   products: [],
   articles: [],
   messages: [],
+  adminUsers: [],
+  subscribers: [],
+  newsletterLogs: [],
   editingProductId: null,
   editingArticleId: null,
   uploadedImage: "",
@@ -25,6 +28,10 @@ function wireAdminEvents() {
   document.getElementById("admin-article-form")?.addEventListener("submit", handleArticleSubmit);
   document.getElementById("admin-article-reset-button")?.addEventListener("click", resetArticleForm);
   document.getElementById("admin-article-cancel-button")?.addEventListener("click", cancelArticleEdit);
+  document.getElementById("admin-user-form")?.addEventListener("submit", handleSubAdminSubmit);
+  document.getElementById("admin-user-reset-button")?.addEventListener("click", resetSubAdminForm);
+  document.getElementById("newsletter-form")?.addEventListener("submit", handleManualNewsletter);
+  document.getElementById("weekly-newsletter-button")?.addEventListener("click", sendWeeklyDigestNow);
 }
 
 function populateCategorySuggestions() {
@@ -51,14 +58,30 @@ async function bootstrapAdmin() {
     const session = await siteApi.apiFetch("/api/session");
     adminState.user = session.user;
     renderAdminHeader();
+    applyRoleVisibility();
     lock?.classList.add("hidden");
     shell?.classList.remove("hidden");
-    await Promise.all([loadProducts(), loadArticles(), loadMessages()]);
+    await loadDashboardData();
   } catch {
     siteApi.clearStoredSession();
     lock?.classList.remove("hidden");
     shell?.classList.add("hidden");
   }
+}
+
+async function loadDashboardData() {
+  await Promise.all([loadProducts(), loadArticles(), loadMessages(), loadSubscribers()]);
+  if (can("manageUsers")) await loadAdminUsers();
+  if (can("manageNewsletter")) await loadNewsletterData();
+}
+
+function applyRoleVisibility() {
+  toggleHidden("restricted-note", adminState.user?.role !== "sub_admin");
+  toggleHidden("product-form-card", !can("manageProducts"));
+  toggleHidden("article-form-card", !can("manageArticles"));
+  toggleHidden("user-management-card", !can("manageUsers"));
+  toggleHidden("admin-user-list-card", !can("manageUsers"));
+  toggleHidden("newsletter-card", !can("manageNewsletter"));
 }
 
 function renderAdminHeader() {
@@ -67,7 +90,7 @@ function renderAdminHeader() {
 
   target.innerHTML = `
     <span class="status-pill">Signed in as ${escapeHtml(adminState.user.name)}</span>
-    <span class="status-pill">${escapeHtml(adminState.user.role)}</span>
+    <span class="status-pill">${escapeHtml(adminState.user.role.replaceAll("_", " "))}</span>
   `;
 }
 
@@ -91,6 +114,24 @@ async function loadMessages() {
   renderMessages();
 }
 
+async function loadSubscribers() {
+  const response = await siteApi.apiFetch("/api/subscribers");
+  adminState.subscribers = response.subscribers || [];
+  renderSubscribers();
+}
+
+async function loadAdminUsers() {
+  const response = await siteApi.apiFetch("/api/admin-users");
+  adminState.adminUsers = response.users || [];
+  renderAdminUsers();
+}
+
+async function loadNewsletterData() {
+  const response = await siteApi.apiFetch("/api/newsletter");
+  adminState.newsletterLogs = response.logs || [];
+  renderNewsletterLogs();
+}
+
 function renderInventory() {
   const wrap = document.getElementById("inventory-list");
   if (!wrap) return;
@@ -100,7 +141,7 @@ function renderInventory() {
         .map(
           (product) => `
             <article class="inventory-item">
-              <button class="inventory-main" type="button" data-edit-id="${product.id}">
+              <button class="inventory-main" type="button" ${can("manageProducts") ? `data-edit-id="${product.id}"` : ""}>
                 <img src="${escapeAttribute(product.image)}" alt="${escapeAttribute(product.name)}">
                 <div>
                   <strong>${escapeHtml(product.name)}</strong>
@@ -109,21 +150,24 @@ function renderInventory() {
               </button>
               <strong>GBP ${formatPrice(product.price)}</strong>
               <div class="inventory-actions">
-                <button class="text-button" type="button" data-edit-id="${product.id}">Edit</button>
-                <button class="text-button danger-text" type="button" data-delete-id="${product.id}">Delete</button>
+                ${can("manageProducts") ? `<button class="text-button" type="button" data-edit-id="${product.id}">Edit</button>` : ""}
+                ${can("manageProducts") ? `<button class="text-button danger-text" type="button" data-delete-id="${product.id}">Delete</button>` : ""}
+                ${!can("manageProducts") ? `<span class="muted-note">View only</span>` : ""}
               </div>
             </article>
           `,
         )
         .join("")
-    : `<article class="dashboard-lock"><p>No recommendations yet. Add your first product below.</p></article>`;
+    : `<article class="dashboard-lock"><p>No recommendations are available right now.</p></article>`;
 
-  wrap.querySelectorAll("[data-edit-id]").forEach((button) => {
-    button.addEventListener("click", () => startProductEdit(button.dataset.editId));
-  });
-  wrap.querySelectorAll("[data-delete-id]").forEach((button) => {
-    button.addEventListener("click", () => deleteProduct(button.dataset.deleteId));
-  });
+  if (can("manageProducts")) {
+    wrap.querySelectorAll("[data-edit-id]").forEach((button) => {
+      button.addEventListener("click", () => startProductEdit(button.dataset.editId));
+    });
+    wrap.querySelectorAll("[data-delete-id]").forEach((button) => {
+      button.addEventListener("click", () => deleteProduct(button.dataset.deleteId));
+    });
+  }
 }
 
 function renderArticles() {
@@ -141,21 +185,24 @@ function renderArticles() {
               </div>
               <span class="status-pill">${escapeHtml(article.status)}</span>
               <div class="inventory-actions">
-                <button class="text-button" type="button" data-article-edit-id="${article.id}">Edit</button>
-                <button class="text-button danger-text" type="button" data-article-delete-id="${article.id}">Delete</button>
+                ${can("manageArticles") ? `<button class="text-button" type="button" data-article-edit-id="${article.id}">Edit</button>` : ""}
+                ${can("manageArticles") ? `<button class="text-button danger-text" type="button" data-article-delete-id="${article.id}">Delete</button>` : ""}
+                ${!can("manageArticles") ? `<span class="muted-note">View only</span>` : ""}
               </div>
             </article>
           `,
         )
         .join("")
-    : `<article class="dashboard-lock"><p>No articles yet. Publish your first article below.</p></article>`;
+    : `<article class="dashboard-lock"><p>No articles are available right now.</p></article>`;
 
-  wrap.querySelectorAll("[data-article-edit-id]").forEach((button) => {
-    button.addEventListener("click", () => startArticleEdit(button.dataset.articleEditId));
-  });
-  wrap.querySelectorAll("[data-article-delete-id]").forEach((button) => {
-    button.addEventListener("click", () => deleteArticle(button.dataset.articleDeleteId));
-  });
+  if (can("manageArticles")) {
+    wrap.querySelectorAll("[data-article-edit-id]").forEach((button) => {
+      button.addEventListener("click", () => startArticleEdit(button.dataset.articleEditId));
+    });
+    wrap.querySelectorAll("[data-article-delete-id]").forEach((button) => {
+      button.addEventListener("click", () => deleteArticle(button.dataset.articleDeleteId));
+    });
+  }
 }
 
 function renderMessages() {
@@ -180,8 +227,94 @@ function renderMessages() {
     : `<article class="dashboard-lock"><p>No enquiries yet.</p></article>`;
 }
 
+function renderAdminUsers() {
+  const wrap = document.getElementById("admin-user-list");
+  if (!wrap) return;
+
+  wrap.innerHTML = adminState.adminUsers.length
+    ? adminState.adminUsers
+        .map(
+          (user) => `
+            <article class="inventory-item inventory-item-copy">
+              <div>
+                <strong>${escapeHtml(user.name)}</strong>
+                <p>${escapeHtml(user.email || user.username)} | ${escapeHtml(user.contactNumber || "No contact number")}</p>
+              </div>
+              <span class="status-pill">${escapeHtml(user.role.replaceAll("_", " "))}</span>
+              <div class="inventory-actions">
+                ${user.role === "sub_admin" ? `<button class="text-button danger-text" type="button" data-user-delete-id="${user.id}">Delete</button>` : `<span class="muted-note">Protected</span>`}
+              </div>
+            </article>
+          `,
+        )
+        .join("")
+    : `<article class="dashboard-lock"><p>No admin users available.</p></article>`;
+
+  wrap.querySelectorAll("[data-user-delete-id]").forEach((button) => {
+    button.addEventListener("click", () => deleteSubAdmin(button.dataset.userDeleteId));
+  });
+}
+
+function renderSubscribers() {
+  const wrap = document.getElementById("subscriber-list");
+  if (!wrap) return;
+
+  wrap.innerHTML = adminState.subscribers.length
+    ? adminState.subscribers
+        .map(
+          (subscriber) => `
+            <article class="inventory-item inventory-item-copy">
+              <div>
+                <strong>${escapeHtml(subscriber.name || "Newsletter subscriber")}</strong>
+                <p>${escapeHtml(subscriber.email)}</p>
+              </div>
+              <span class="status-pill">${subscriber.active === false ? "inactive" : "active"}</span>
+              <div class="inventory-actions">
+                ${can("manageNewsletter") ? `<button class="text-button danger-text" type="button" data-subscriber-delete-id="${subscriber.id}">Remove</button>` : `<span class="muted-note">View only</span>`}
+              </div>
+            </article>
+          `,
+        )
+        .join("")
+    : `<article class="dashboard-lock"><p>No subscribers yet.</p></article>`;
+
+  if (can("manageNewsletter")) {
+    wrap.querySelectorAll("[data-subscriber-delete-id]").forEach((button) => {
+      button.addEventListener("click", () => deleteSubscriber(button.dataset.subscriberDeleteId));
+    });
+  }
+}
+
+function renderNewsletterLogs() {
+  const wrap = document.getElementById("newsletter-log-list");
+  if (!wrap) return;
+
+  wrap.innerHTML = adminState.newsletterLogs.length
+    ? adminState.newsletterLogs
+        .slice(0, 5)
+        .map(
+          (log) => `
+            <article class="message-item">
+              <div class="admin-status">
+                <strong>${escapeHtml(log.subject)}</strong>
+                <span>${formatDate(log.createdAt)}</span>
+              </div>
+              <p>Type: ${escapeHtml(log.type)}</p>
+              <p>Sent to ${escapeHtml(String(log.deliveredCount || 0))} of ${escapeHtml(String(log.subscriberCount || 0))} subscribers.</p>
+            </article>
+          `,
+        )
+        .join("")
+    : `<article class="dashboard-lock"><p>No newsletter campaigns sent yet.</p></article>`;
+}
+
 async function handleProductSubmit(event) {
   event.preventDefault();
+  if (!can("manageProducts")) {
+    siteApi.showToast("Your role cannot manage products.");
+    return;
+  }
+
   const form = event.currentTarget;
   const formData = new FormData(form);
   const payload = {
@@ -222,6 +355,11 @@ async function handleProductSubmit(event) {
 
 async function handleArticleSubmit(event) {
   event.preventDefault();
+  if (!can("manageArticles")) {
+    siteApi.showToast("Your role cannot manage articles.");
+    return;
+  }
+
   const form = event.currentTarget;
   const formData = new FormData(form);
   const payload = {
@@ -265,9 +403,90 @@ async function handleArticleSubmit(event) {
   }
 }
 
+async function handleSubAdminSubmit(event) {
+  event.preventDefault();
+  if (!can("manageUsers")) {
+    siteApi.showToast("Only the master admin can manage users.");
+    return;
+  }
+
+  const formData = new FormData(event.currentTarget);
+  try {
+    const response = await siteApi.apiFetch("/api/admin-users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.get("name"),
+        contactNumber: formData.get("contactNumber"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+      }),
+    });
+    adminState.adminUsers = [response.user, ...adminState.adminUsers];
+    renderAdminUsers();
+    resetSubAdminForm();
+    siteApi.showToast("Sub-admin created.");
+  } catch (error) {
+    siteApi.showToast(error.message || "Could not create sub-admin.");
+  }
+}
+
+async function handleManualNewsletter(event) {
+  event.preventDefault();
+  if (!can("manageNewsletter")) {
+    siteApi.showToast("Only the master admin can send newsletters.");
+    return;
+  }
+
+  const formData = new FormData(event.currentTarget);
+  try {
+    const response = await siteApi.apiFetch("/api/newsletter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subject: formData.get("subject"),
+        body: formData.get("body"),
+        mode: "manual",
+      }),
+    });
+    adminState.newsletterLogs = [response.campaign, ...adminState.newsletterLogs];
+    renderNewsletterLogs();
+    event.currentTarget.reset();
+    siteApi.showToast(
+      response.smtpConfigured ? "Newsletter sent to subscribers." : "Newsletter campaign saved, but SMTP is not configured yet.",
+    );
+  } catch (error) {
+    siteApi.showToast(error.message || "Could not send newsletter.");
+  }
+}
+
+async function sendWeeklyDigestNow() {
+  if (!can("manageNewsletter")) {
+    siteApi.showToast("Only the master admin can send newsletters.");
+    return;
+  }
+
+  try {
+    const response = await siteApi.apiFetch("/api/newsletter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mode: "weekly_digest",
+      }),
+    });
+    adminState.newsletterLogs = [response.campaign, ...adminState.newsletterLogs];
+    renderNewsletterLogs();
+    siteApi.showToast(
+      response.smtpConfigured ? "Weekly digest sent." : "Weekly digest prepared, but SMTP is not configured yet.",
+    );
+  } catch (error) {
+    siteApi.showToast(error.message || "Could not send the weekly digest.");
+  }
+}
+
 function startProductEdit(productId) {
   const product = adminState.products.find((item) => item.id === productId);
-  if (!product) return;
+  if (!product || !can("manageProducts")) return;
 
   adminState.editingProductId = product.id;
   adminState.uploadedImage = product.image;
@@ -288,7 +507,7 @@ function startProductEdit(productId) {
 
 function startArticleEdit(articleId) {
   const article = adminState.articles.find((item) => item.id === articleId);
-  if (!article) return;
+  if (!article || !can("manageArticles")) return;
 
   adminState.editingArticleId = article.id;
   document.getElementById("admin-article-form-title").textContent = "Edit article";
@@ -314,6 +533,7 @@ function startArticleEdit(articleId) {
 }
 
 async function deleteProduct(productId) {
+  if (!can("manageProducts")) return;
   const product = adminState.products.find((item) => item.id === productId);
   if (!product) return;
 
@@ -333,6 +553,7 @@ async function deleteProduct(productId) {
 }
 
 async function deleteArticle(articleId) {
+  if (!can("manageArticles")) return;
   const article = adminState.articles.find((item) => item.id === articleId);
   if (!article) return;
 
@@ -348,6 +569,36 @@ async function deleteArticle(articleId) {
     siteApi.showToast(`Removed ${article.title}.`);
   } catch (error) {
     siteApi.showToast(error.message || "Could not delete article.");
+  }
+}
+
+async function deleteSubAdmin(userId) {
+  if (!can("manageUsers")) return;
+
+  try {
+    await siteApi.apiFetch(`/api/admin-users?id=${encodeURIComponent(userId)}`, {
+      method: "DELETE",
+    });
+    adminState.adminUsers = adminState.adminUsers.filter((item) => item.id !== userId);
+    renderAdminUsers();
+    siteApi.showToast("Sub-admin removed.");
+  } catch (error) {
+    siteApi.showToast(error.message || "Could not delete sub-admin.");
+  }
+}
+
+async function deleteSubscriber(subscriberId) {
+  if (!can("manageNewsletter")) return;
+
+  try {
+    await siteApi.apiFetch(`/api/subscribers?id=${encodeURIComponent(subscriberId)}`, {
+      method: "DELETE",
+    });
+    adminState.subscribers = adminState.subscribers.filter((item) => item.id !== subscriberId);
+    renderSubscribers();
+    siteApi.showToast("Subscriber removed.");
+  } catch (error) {
+    siteApi.showToast(error.message || "Could not remove subscriber.");
   }
 }
 
@@ -367,6 +618,10 @@ function resetArticleForm() {
   document.getElementById("admin-article-save-button").textContent = "Publish Article";
   document.getElementById("admin-article-status").value = "published";
   document.getElementById("admin-article-cancel-button").classList.add("hidden");
+}
+
+function resetSubAdminForm() {
+  document.getElementById("admin-user-form")?.reset();
 }
 
 function cancelProductEdit() {
@@ -439,6 +694,18 @@ function slugify(value) {
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function can(permissionKey) {
+  if (!adminState.user) return false;
+  if (adminState.user.role === "master_admin") return true;
+  return Boolean(adminState.user.permissions && adminState.user.permissions[permissionKey]);
+}
+
+function toggleHidden(id, shouldHide) {
+  const element = document.getElementById(id);
+  if (!element) return;
+  element.classList.toggle("hidden", shouldHide);
 }
 
 function formatPrice(price) {

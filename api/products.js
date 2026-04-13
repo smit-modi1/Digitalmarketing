@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 
-const { getSessionUser } = require("../lib/auth");
+const { getSessionUser, hasPermission } = require("../lib/auth");
 const { getSearchParam, readJsonBody, sendJson } = require("../lib/http");
 const { getProducts, saveProducts } = require("../lib/store");
 
@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
     }
 
     const user = getSessionUser(req);
-    if (!user || user.role !== "master_admin") {
+    if (!hasPermission(user, "manageProducts")) {
       sendJson(res, 403, { error: "Admin access required." });
       return;
     }

@@ -1,4 +1,4 @@
-window.PointMarketingContent = {
+window.UkshoppinghubContent = {
   articles: [],
   categories: [
     {

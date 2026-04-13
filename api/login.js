@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
 
   try {
     const body = await readJsonBody(req);
-    const user = verifyAdminCredentials(body.username, body.password);
+    const user = await verifyAdminCredentials(body.username, body.password);
 
     if (!user) {
       sendJson(res, 401, { error: "Invalid username or password." });
