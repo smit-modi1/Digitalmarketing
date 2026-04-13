@@ -8,6 +8,7 @@ const siteState = {
   articles: Array.isArray(content.articles) ? content.articles : [],
   categories: Array.isArray(content.categories) ? content.categories : [],
 };
+const mobileMenuQuery = typeof window !== "undefined" && window.matchMedia ? window.matchMedia("(max-width: 860px)") : null;
 
 document.addEventListener("DOMContentLoaded", async () => {
   renderShell();
@@ -29,7 +30,15 @@ function renderShell() {
         <div class="brand-block">
           <a class="brand" href="/index.html">Intellicons</a>
         </div>
-        <nav class="main-nav" aria-label="Primary">
+        <button class="nav-toggle" type="button" id="nav-toggle" aria-expanded="false" aria-controls="primary-nav">
+          <span class="nav-toggle-lines" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+          <span>Menu</span>
+        </button>
+        <nav class="main-nav" id="primary-nav" aria-label="Primary">
           ${navLink("Home", "/index.html", active === "home")}
           ${navLink("Articles", "/articles.html", active === "articles")}
           ${navLink("Recommendations", "/recommendations.html", active === "recommendations")}
@@ -95,6 +104,10 @@ function navLink(label, href, isActive) {
 }
 
 function wireGlobalEvents() {
+  document.getElementById("nav-toggle")?.addEventListener("click", toggleMobileMenu);
+  document.querySelectorAll(".main-nav a").forEach((link) => {
+    link.addEventListener("click", closeMobileMenu);
+  });
   document.getElementById("login-trigger")?.addEventListener("click", openLoginModal);
   document.getElementById("close-login-modal")?.addEventListener("click", closeLoginModal);
   document.getElementById("login-modal")?.addEventListener("click", (event) => {
@@ -103,6 +116,8 @@ function wireGlobalEvents() {
   document.getElementById("login-form")?.addEventListener("submit", handleLogin);
   document.getElementById("logout-button")?.addEventListener("click", handleLogout);
   document.getElementById("contact-form")?.addEventListener("submit", handleContactSubmit);
+  mobileMenuQuery?.addEventListener?.("change", syncMobileMenuToViewport);
+  syncMobileMenuToViewport();
 }
 
 async function validateSession() {
@@ -159,6 +174,7 @@ async function handleLogin(event) {
     if (!response.ok) throw new Error(data.error || "Login failed.");
 
     storeSession(data.token, data.user);
+    closeMobileMenu();
     closeLoginModal();
     form.reset();
     showToast(`Signed in as ${data.user.name}.`);
@@ -183,6 +199,7 @@ async function handleLogout() {
 
   clearStoredSession();
   updateAuthUi(null);
+  closeMobileMenu();
   showToast("Signed out.");
   if (document.body.dataset.page === "admin") {
     window.location.href = "/index.html";
@@ -486,7 +503,7 @@ async function renderCategoryDetailPage() {
     try {
       const response = await fetch("/api/products");
       const data = await readResponseData(response);
-      const products = (data.products || []).filter((item) => item.category === category.productCategory);
+      const products = (data.products || []).filter((item) => item.category === category.productCategory || item.category === category.name);
 
       productsWrap.innerHTML = products.length
         ? products
@@ -638,6 +655,34 @@ function renderContactSidebar() {
       <p>Purchases are completed on Amazon, not on this website. If an order issue relates to shipping or returns, Amazon support will usually be the right place to check first.</p>
     </article>
   `;
+}
+
+function toggleMobileMenu() {
+  const shouldOpen = !document.body.classList.contains("nav-open");
+  setMobileMenuState(shouldOpen);
+}
+
+function closeMobileMenu() {
+  setMobileMenuState(false);
+}
+
+function setMobileMenuState(isOpen) {
+  const toggle = document.getElementById("nav-toggle");
+  if (!mobileMenuQuery?.matches) {
+    document.body.classList.remove("nav-open");
+    toggle?.setAttribute("aria-expanded", "false");
+    return;
+  }
+
+  document.body.classList.toggle("nav-open", isOpen);
+  toggle?.setAttribute("aria-expanded", isOpen ? "true" : "false");
+}
+
+function syncMobileMenuToViewport() {
+  if (!mobileMenuQuery?.matches) {
+    document.body.classList.remove("nav-open");
+    document.getElementById("nav-toggle")?.setAttribute("aria-expanded", "false");
+  }
 }
 
 function openLoginModal() {
