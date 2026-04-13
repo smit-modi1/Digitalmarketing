@@ -1,4 +1,4 @@
-# Ukshoppinghub
+# DailyDealsUK
 
 Multi-page affiliate content site with:
 

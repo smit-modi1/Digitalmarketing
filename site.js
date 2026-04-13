@@ -3,13 +3,13 @@ const storageKeys = {
   sessionUser: "affiliate-uk-session-user-v1",
 };
 
-const content = window.UkshoppinghubContent || { articles: [], categories: [] };
+const content = window.DailyDealsUkContent || { articles: [], categories: [] };
 const siteState = {
   articles: Array.isArray(content.articles) ? content.articles : [],
   categories: Array.isArray(content.categories) ? content.categories : [],
 };
-const brandName = "Ukshoppinghub";
-const contactEmail = "info.ukshoppinghub@gmail.com";
+const brandName = "DailyDealsUK";
+const contactEmail = "info.dailydealsuk@gmail.com";
 const mobileMenuQuery = typeof window !== "undefined" && window.matchMedia ? window.matchMedia("(max-width: 860px)") : null;
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -821,7 +821,7 @@ function escapeAttribute(value) {
   return escapeHtml(value);
 }
 
-window.UkshoppinghubSite = {
+window.DailyDealsUkSite = {
   apiFetch,
   clearStoredSession,
   getStoredToken,

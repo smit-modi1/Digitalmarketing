@@ -1,5 +1,5 @@
-const siteApi = window.UkshoppinghubSite;
-const content = window.UkshoppinghubContent || { categories: [] };
+const siteApi = window.DailyDealsUkSite;
+const content = window.DailyDealsUkContent || { categories: [] };
 
 let adminState = {
   user: null,

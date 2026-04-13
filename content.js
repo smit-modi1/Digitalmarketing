@@ -1,4 +1,4 @@
-window.UkshoppinghubContent = {
+window.DailyDealsUkContent = {
   articles: [],
   categories: [
     {
@@ -10,19 +10,19 @@ window.UkshoppinghubContent = {
         { title: "What matters most", text: "Comfort, reliability, battery performance, and day-to-day usability usually matter more than headline specs." },
         { title: "Where to start", text: "If you are unsure, start with earbuds, Bluetooth speakers, or power banks because they tend to show practical value quickly." },
       ],
-      relatedArticle: "wireless-earbuds-2026",
+      relatedArticle: "best-budget-tvs-uk",
       productCategory: "Audio",
     },
     {
       slug: "home-kitchen",
       name: "Home & Kitchen",
-      description: "Useful kitchen and home products chosen for convenience, cleaning ease, durability, and everyday value rather than novelty.",
+      description: "Useful kitchen, appliance, and home product coverage chosen for convenience, durability, space fit, and everyday value rather than novelty.",
       sections: [
-        { title: "What we cover", text: "We review appliances, cookware, pantry organisers, and home products that support everyday routines." },
+        { title: "What we cover", text: "We review appliances, cookware, pantry organisers, furniture-friendly home buys, and practical products that support everyday routines." },
         { title: "What matters most", text: "Cleaning effort, build quality, usable capacity, and realistic counter or cupboard fit matter more than flashy features." },
         { title: "Where to start", text: "Air fryers, coffee makers, and quality pans are often the fastest wins for most households." },
       ],
-      relatedArticle: "air-fryer-buying-guide",
+      relatedArticle: "budget-washing-machines-uk",
       productCategory: "Kitchen",
     },
     {
@@ -76,13 +76,13 @@ window.UkshoppinghubContent = {
     {
       slug: "fashion",
       name: "Fashion",
-      description: "Everyday carry, commuter, and wearable product recommendations where practicality, comfort, and durability matter as much as style.",
+      description: "Everyday carry, jewellery, women’s clothing, and wearable product recommendations where practicality, comfort, and durability matter as much as style.",
       sections: [
-        { title: "What we cover", text: "We focus on products that need to work well in real life, especially bags and accessories used daily." },
-        { title: "What matters most", text: "Fit, comfort, organisation, and weather readiness usually matter more than appearance alone." },
-        { title: "Where to start", text: "Laptop backpacks are a good example of a purchase where layout and daily comfort matter immediately." },
+        { title: "What we cover", text: "We focus on products that need to work well in real life, especially bags, jewellery gifts, clothing staples, and accessories used regularly." },
+        { title: "What matters most", text: "Fit, comfort, finish, repeat wear, and practical value usually matter more than appearance alone." },
+        { title: "Where to start", text: "Daily wardrobe basics and simple jewellery gifts are often easier to judge well than purely trend-led purchases." },
       ],
-      relatedArticle: "best-laptop-backpacks-commuters",
+      relatedArticle: "best-womens-clothing-basics-uk",
       productCategory: "Fashion",
     },
     {
@@ -136,12 +136,13 @@ window.UkshoppinghubContent = {
     {
       slug: "toys-games",
       name: "Toys & Games",
-      description: "A category reserved for future guides covering useful, durable, and age-appropriate play products.",
+      description: "Useful, durable, and age-appropriate toy recommendations for families who want products with real replay value.",
       sections: [
-        { title: "What we cover", text: "We plan to publish more family and play-based recommendation guides here over time." },
-        { title: "What matters most", text: "Durability, age fit, and real replay value matter more than gimmicks." },
-        { title: "Where to start", text: "Use the broader articles section for now while this category grows." },
+        { title: "What we cover", text: "We cover play products that feel engaging, giftable, and sensible for real family use rather than impulse buys." },
+        { title: "What matters most", text: "Durability, age fit, safety, and replay value matter more than gimmicks." },
+        { title: "Where to start", text: "STEM kits, creative sets, and dependable outdoor toys are usually the strongest starting points." },
       ],
+      relatedArticle: "best-child-toys-uk",
       productCategory: "Toys & Games",
     },
     {
